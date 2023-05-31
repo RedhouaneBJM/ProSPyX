@@ -6,5 +6,9 @@ ProSPyX is an open-source Python software, developed using PyQt5, suitable for f
 ## Download the package
 
 ### Using the zip file
-* 
+* Click on the green button labeled 'Code' on the right-hand side.
+* Click on 'Download ZIP' option from the drop down menu.
+* Unzip 'ProSPyX-main' file.
+### Using Git
+* insi
 
