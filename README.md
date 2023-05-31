@@ -3,12 +3,19 @@ ProSPyX is an open-source Python software, developed using PyQt5, suitable for f
 
 # How to use it
 
-## Download the package
-
+## Download of the package
 ### Using the zip file
 * Click on the green button labeled 'Code' on the right-hand side.
 * Click on 'Download ZIP' option from the drop down menu.
 * Unzip 'ProSPyX-main' file.
 ### Using Git
-* insi
+* Type on a terminal `git clone https://github.com/RedhouaneBJM/ProSPyX.git`
+
+## Installation of the package
+ProSPyX requires Python 3.9 or an older version
+Inside the created folder after downloading/clone github repository files open a terminal :
+* Type `pip install -r requirements.txt`
+
+## Give it a try
+
 
