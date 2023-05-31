@@ -1,0 +1,8 @@
+numpy==1.20.3
+scipy==1.7.1
+scikit-image==0.18.3
+matplotlib==3.4.3
+h5py==3.2.1
+PyQt5
+matplotlib_scalebar
+
