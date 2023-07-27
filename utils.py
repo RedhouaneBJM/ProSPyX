@@ -50,6 +50,10 @@ def progbar(curr, total, textstr=""):
     textperc = "[{:>7.2%}]".format(frac)
     print("\r", textbar, textperc, textstr, end="")
 
+
+
+
+
 def rmlinearphase(image, mask):
     """
     Removes linear phase from object
@@ -193,20 +197,21 @@ def convert_phase2delta(imgin, energy,dz):
     wavelen =  (12.4 / energy) * 1e-10
     factor = -wavelen / (2*np.pi*dz*1e-6)
 
-    return imgin*factor, factor
+    return imgin*(factor), factor
 
 
-def convert_to_beta(input_img,energy,dz,apply_log=True):
+def convert_to_beta(input_img,energy,dz):
     """
     Converts the image gray-levels from amplitude to beta
     """
     wavelen =  (12.4 / energy) * 1e-10
     factor = wavelen / (2*np.pi*dz*1e-6)
-
+    beta=(input_img*wavelen)/(dz*1e-6*4*np.pi)
     # In case the log has not yet been applied to the image
-    if apply_log:
-        input_img = np.log(input_img)
-    return input_img * (-factor), factor
+    #if apply_log:
+        #input_img = np.log(input_img)
+    #return input_img * (-factor), factor
+    return beta,factor
 
 def get_thickness():
     
@@ -246,6 +251,49 @@ def sort_array(input_array, ref_array):
     return sorted_input_array, sorted_ref_array
 
 
+
+def air_normalization(image,mask):
+
+    """
+    dividing the measured transmitted x-ray intensity by the incident x-ray intensity in the absence of a sample
+
+    Parameters
+    ----------
+    image : array_like
+        Amplitude image
+    mask : bool
+        Boolean array with ones to define the ROI outside the sample
+
+    Returns
+    -------
+    im_output : array_like
+        Array of normalized intensity values
+    """
+    
+    
+    air_intensity=np.mean(image[np.where(mask==True)])
+    
+    return (image / air_intensity)
+
+def convert_to_mudz(image):
+    
+    
+    """
+    Converting normalized amplitude image to image of product between the attenuation factor and sample thickness
+
+    Parameters
+    ----------
+    image : array_like
+       Normalized amplitude values
+
+    Returns
+    -------
+    im_output : array_like
+        Array of product between the attenuation coefficient and sample thickness
+    """
+    
+    
+    return (-1)*2*np.log(image)
 
 
 class NavigationToolbar2QT(NavigationToolbar):
