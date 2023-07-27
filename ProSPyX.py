@@ -11,11 +11,14 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 import matplotlib.pyplot as plt
 from PyQt5 import QtCore, QtGui, QtWidgets
-
+from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QFileDialog,QApplication, QMainWindow, QDialog, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton,QMessageBox
 from PyQt5.QtGui import QDoubleValidator
 from utils import *
+import sys
+import io
 
+#import cairosvg
 
 
 
@@ -123,9 +126,22 @@ class Ui_MainWindow(QMainWindow):
     add_mask_=0
     mask_all_=0
     load_mask_=0
+    phase_amp=0
     var1=False
     x_i=[]
     y_i=[]
+    use_shifts=0
+    factor=[]
+    #text=[]
+    #text.append("Phase shift in radians")
+    #text.append("Amplitude")
+    ylabel_contrast=[]
+    ylabel_contrast.append("Delta values")
+    ylabel_contrast.append("Beta values")
+    
+    
+    
+    
     plt.close(fig='before')
     
     list_cmap=plt.colormaps()
@@ -202,6 +218,9 @@ class Ui_MainWindow(QMainWindow):
         self.gridLayout_16.setObjectName("gridLayout_16")
         self.tabWidget = QtWidgets.QTabWidget(self.frame)
         self.tabWidget.setObjectName("tabWidget")
+        
+        
+        ##################### Add Qradio boutton ####################
         self.tab = QtWidgets.QWidget()
         self.tab.setObjectName("tab")
         self.gridLayout_14 = QtWidgets.QGridLayout(self.tab)
@@ -220,10 +239,33 @@ class Ui_MainWindow(QMainWindow):
         self.pushButton_browse = QtWidgets.QPushButton(self.tab)
         self.pushButton_browse.setObjectName("pushButton_browse")
         self.gridLayout_13.addWidget(self.pushButton_browse, 2, 1, 1, 1)
+
+        
+        
+        
+        
+        
+        self.radioButton_absorption = QtWidgets.QRadioButton("Amplitude", self.tab)
+        self.radioButton_absorption.setObjectName("radioButton_absorption")
+        self.gridLayout_13.addWidget(self.radioButton_absorption, 5, 1, 1, 1)
+    
+        self.radioButton_phase = QtWidgets.QRadioButton("Phase", self.tab)
+        self.radioButton_phase.setObjectName("radioButton_phase")
+        self.gridLayout_13.addWidget(self.radioButton_phase, 6, 1, 1, 1)
+        self.radioButton_phase.setChecked(True)
+            
+        
+        
         spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
-        self.gridLayout_13.addItem(spacerItem, 1, 1, 1, 1)
+        self.gridLayout_13.addItem(spacerItem, 4, 0, 1, 2)
         self.gridLayout_14.addLayout(self.gridLayout_13, 0, 0, 1, 1)
         self.tabWidget.addTab(self.tab, "")
+        
+        
+        
+        
+        #############################################################
+        
         self.tab_2 = QtWidgets.QWidget()
         self.tab_2.setObjectName("tab_2")
         self.gridLayout_12 = QtWidgets.QGridLayout(self.tab_2)
@@ -534,7 +576,8 @@ class Ui_MainWindow(QMainWindow):
         self.pushButton_AddMask_.clicked.connect(self.add_mask)
         self.pushButton_MaskAll_.clicked.connect(self.mask_all)
         
-        
+        self.radioButton_absorption.clicked.connect(self.absorption_contrast)
+        self.radioButton_phase.clicked.connect(self.phase_contrast)
         
         
         self.input_dialog = InputDialog(self)
@@ -666,7 +709,111 @@ class Ui_MainWindow(QMainWindow):
         self.LVMax.setText(_translate("MainWindow", "Vmax_A"))
         self.Labelcolormap.setText(_translate("MainWindow", "Colormap:"))
         self.label_vmin2.setText(_translate("MainWindow", "Vmin_B"))
-        self.label_vmax2.setText(_translate("MainWindow", "Vmax_A"))
+        self.label_vmax2.setText(_translate("MainWindow", "Vmax_B"))
+   
+    
+   
+    def test1(self):
+        
+        print("test for absorption ")
+
+    def absorption_contrast(self):
+        
+        if self.data_==0:
+            print("There is no data ")
+            QMessageBox.warning(None, 'Error',"There is no data")
+            
+        else:
+            
+            print("abs")
+            self.X01_previous_phase=self.X01
+            self.X1_previous_phase=self.X1
+            # self.X02_previous_phase=self.X02
+            # self.X2_previous_phase=self.X2
+            
+            self.X01=self.X03
+            self.X1=self.X3
+            self.X2 = self.X1[:, self.hcen, :].copy()
+            self.X02=self.X01[:, self.hcen, :].copy()
+            
+            
+                    
+            
+            
+            
+            self.pushButton_ApplyMask_.setText("Normalization")
+            self.pushButton_ApplyMask_.clicked.disconnect(self.apply_mask)
+            self.pushButton_ApplyMask_.clicked.connect(self.Normalization)
+            
+            self.pushButton_ApplyAllMask_.setText("Normalization all")
+            self.pushButton_ApplyAllMask_.clicked.disconnect(self.apply_all_masks)
+            self.pushButton_ApplyAllMask_.clicked.connect(self.Normalization_all)
+            
+            
+            
+            
+            self.pushButton_Unwrap_.setText('Convert to (\u03BC*sample thickness)')
+            self.pushButton_Unwrap_.clicked.disconnect(self.unwrapping_phase)
+            self.pushButton_Unwrap_.clicked.connect(self.convert_mudz)
+            
+            self.pushButton_UnwrapAll_.setText('Convert to (\u03BC*sample thickness) all')
+            self.pushButton_UnwrapAll_.clicked.disconnect(self.unwrapping_all)
+            self.pushButton_UnwrapAll_.clicked.connect(self.convert_mudz_all)
+            
+            
+            self.phase_amp=1
+            self.update_list()
+            self.update_org()
+            self.update_pro()
+            
+        
+    
+    def phase_contrast(self):
+        
+        if self.data_==0:
+            print("There is no data ")
+            QMessageBox.warning(None, 'Error',"There is no data")
+            
+        else:
+            
+        
+            print("ph")
+            self.X01_previous_absorption=self.X03
+            self.X1_previous_absorption=self.X3
+            # self.X02_previous_absorption=self.X02
+            # self.X2_previous_absorption=self.X2
+            
+            self.X01=self.X01_previous_phase#self.X03
+            self.X1=self.X1_previous_phase#self.X03
+            self.X2 = self.X1[:, self.hcen, :].copy()
+            self.X02=self.X01[:, self.hcen, :].copy()
+            
+           
+            self.pushButton_ApplyMask_.setText("Apply mask")
+            self.pushButton_ApplyMask_.clicked.disconnect(self.Normalization)
+            self.pushButton_ApplyMask_.clicked.connect(self.apply_mask)
+            
+            
+            self.pushButton_ApplyAllMask_.setText("Apply all mask")
+            self.pushButton_ApplyAllMask_.clicked.disconnect(self.Normalization_all)
+            self.pushButton_ApplyAllMask_.clicked.connect(self.apply_all_masks)
+            
+           
+            self.pushButton_Unwrap_.setText("Unwrap")
+            self.pushButton_Unwrap_.clicked.disconnect(self.convert_mudz)
+            self.pushButton_Unwrap_.clicked.connect(self.unwrapping_phase)
+            
+            
+            self.pushButton_UnwrapAll_.setText("Unwrap all")
+            self.pushButton_UnwrapAll_.clicked.disconnect(self.convert_mudz_all)
+            self.pushButton_UnwrapAll_.clicked.connect(self.unwrapping_all)
+            
+            self.phase_amp=0
+            self.update_list()
+            self.update_org()
+            self.update_pro()
+    
+    
     
     def rotate(self):
         
@@ -684,24 +831,57 @@ class Ui_MainWindow(QMainWindow):
             
             tmp_before=np.zeros((nprojs,nr_b,nc_b))
             tmp_after=np.zeros((nprojs,nr_a,nc_a))
-            tmp_abs=np.zeros((nprojs,nr_a,nc_a))
+            tmp_abs_before=np.zeros((nprojs,nr_a,nc_a))
+            tmp_abs_after=np.zeros((nprojs,nr_a,nc_a))
             
             
-            for i in range(len(self.X1)):
+            
+            
+            if self.phase_amp==0:
                 
-                tmp_before[i]=np.rot90(self.X01[i],1/2)
-                tmp_after[i]=np.rot90(self.X1[i],1/2)
-                tmp_abs[i]=np.rot90(self.X03[i],1/2)
+            
+                for i in range(len(self.X1)):
                 
+                    tmp_before[i]=np.rot90(self.X01[i],1/2)
+                    tmp_after[i]=np.rot90(self.X1[i],1/2)
+                    tmp_abs_before[i]=np.rot90(self.X03[i],1/2)
+                    tmp_abs_after[i]=np.rot90(self.X3[i],1/2)
         
-            del self.X1
-            del self.X01
-            del self.X03
+                del self.X1
+                del self.X01
+                del self.X03
+                del self.X3
         
         
-            self.X1=tmp_after
-            self.X01=tmp_before
-            self.X03=tmp_abs
+                self.X1=tmp_after
+                self.X01=tmp_before
+                self.X03=tmp_abs_before
+                self.X3= tmp_abs_after
+                
+                
+            else:
+                
+                for i in range(len(self.X1)):
+                
+                    tmp_before[i]=np.rot90(self.X01[i],1/2)
+                    tmp_after[i]=np.rot90(self.X1[i],1/2)
+                    tmp_abs_before[i]=np.rot90(self.X01_previous_phase[i],1/2)
+                    tmp_abs_after[i]=np.rot90(self.X1_previous_phase[i],1/2)
+        
+                del self.X1
+                del self.X01
+                del self.X03
+                del self.X1_previous_phase
+        
+        
+                self.X1_previous_phase=tmp_abs_after
+                self.X01=tmp_before
+                self.X01_previous_phase=tmp_abs_before
+                self.X1= tmp_after
+                self.X03=tmp_before
+                self.X3=tmp_after
+                
+                
             
             
             self.projs, self.rows, self.cols = self.X1.shape
@@ -730,12 +910,16 @@ class Ui_MainWindow(QMainWindow):
             self.maxenergyproj = self.X1[self.maxind].copy()
             self.cropval = 1
             self.alignpixel = 1.0
-            self.shift = np.zeros((self.projs, 2))
+            self.shift = np.zeros((2,self.projs, 2))
             self.step_crop = 1
             self.limh0=0
             self.limhf=self.cols
             self.limv0=0
             self.limvf=self.rows
+        
+
+        
+        
         
         self.update_pro()
         self.update_org()
@@ -833,6 +1017,9 @@ class Ui_MainWindow(QMainWindow):
                     self.X1 = np.zeros((self.num_files, self.nr, self.nc), dtype=float)  # only phases
                     self.X01=np.zeros((self.num_files, self.nr, self.nc), dtype=float)
                     self.X03=np.zeros((self.num_files, self.nr, self.nc), dtype=float)
+                    self.X3=np.zeros((self.num_files, self.nr, self.nc), dtype=float)
+                    
+
                     
                     # objdata = np.zeros((num_files,nr,nc),dtype=np.complex64) # if complex
                     self.pixel = np.zeros((self.num_files, 2))
@@ -921,7 +1108,15 @@ class Ui_MainWindow(QMainWindow):
                         self.X1[ii] = np.angle(self.objdata_aux)  # only phase
                         self.X01[ii]=np.angle(self.objdata_aux)
                         self.X03[ii]=np.abs(self.objdata_aux)
+                        self.X3[ii]=np.abs(self.objdata_aux)
                     self.X1 = self.X1.copy()
+                    
+                    self.X01_previous_phase=self.X01
+                    self.X1_previous_phase=self.X1
+                    self.X01_previous_absorption=self.X03
+                    self.X1_previous_absorption=self.X3
+                    self.before_delta=np.zeros_like(self.X1)
+                    self.before_beta=np.zeros_like(self.X3)
                     if np.iscomplexobj(self.X1):
                 
                         raise ValueError("The array is complex")
@@ -951,7 +1146,7 @@ class Ui_MainWindow(QMainWindow):
                     self.maxenergyproj = self.X1[self.maxind].copy()
                     self.cropval = 1
                     self.alignpixel = 1.0
-                    self.shift = np.zeros((self.projs, 2))
+                    self.shift = np.zeros((2,self.projs, 2))
                     self.step_crop = 1
                     self.limh0=0
                     self.limhf=self.cols
@@ -979,11 +1174,38 @@ class Ui_MainWindow(QMainWindow):
                         QtWidgets.QHeaderView.ResizeToContents)
                     
                     
+                    rows = 2
+                    columns = self.projs
+
+                    self.text0 = [['' for _ in range(columns)] for _ in range(rows)]
+
+
+                    self.text0[0] = ["Phase shift [rad]"] * columns
+
+                    self.text0[1] = ["Amplitude [a.u.]"] * columns
+                    
+                    
+                    self.text = [['' for _ in range(columns)] for _ in range(rows)]
+
+
+                    self.text[0] = ["Phase shift [rad]"] * columns
+
+                    self.text[1] = ["Amplitude [a.u.]"] * columns
+                    
+                    
+                    from PyQt5.QtGui import QPainter
+                    
                     self.update_org()
                     self.update_pro()
                     QMessageBox.information(None, "Processing Done", "reading of the data is done")
+                    from PyQt5.QtSvg import QSvgGenerator
+                    from PyQt5.QtGui import QPainter, QColor, QPalette  # Add the QPalette import here
+
+
 
                     
+
+
 
                 else:
                     print("you need to define correct path")
@@ -1009,7 +1231,9 @@ class Ui_MainWindow(QMainWindow):
         
         
             for i in range(0,len(self.file_list)):
-                
+            
+                self.tableWidget.setItem(i,2, QtWidgets.QTableWidgetItem("{:4.2f}".format(np.min(self.X01[i]))))    
+                self.tableWidget.setItem(i,4, QtWidgets.QTableWidgetItem("{:4.2f}".format(np.max(self.X01[i]))))
                 self.tableWidget.setItem(i,3, QtWidgets.QTableWidgetItem("{:4.2f}".format(np.min(self.X1[i]))))
                 self.tableWidget.setItem(i,5, QtWidgets.QTableWidgetItem("{:4.2f}".format(np.max(self.X1[i]))))
             #self.tableWidget.setItem(0,0, QtWidgets.QTableWidgetItem("Name"))
@@ -1020,7 +1244,11 @@ class Ui_MainWindow(QMainWindow):
                     QtWidgets.QHeaderView.ResizeToContents)
     def get_ItemIndex(self):
         
-        
+        screen = QtWidgets.QApplication.primaryScreen()
+        screenshot = screen.grabWindow(self.centralwidget.winId())
+
+# Save the screenshot as an image file
+        screenshot.save('mainwindow.png', 'PNG', 100)
         
         if self.data_==0:
             print("No data")
@@ -1093,11 +1321,8 @@ class Ui_MainWindow(QMainWindow):
             #self.ax2.set_xlim([0, self.cols])
             ax1.set_ylabel("Projection {}".format(self.ind + 1))
             ax1.add_artist(scalebar)
-            if self.contrast==0:
                 
-                ax2.set_ylabel("phase shift in radians")
-            else:
-                ax2.set_ylabel("delta values ")
+            ax2.set_ylabel(self.text0[self.phase_amp][self.ind])
             
             self.figure1.tight_layout()
             #self.figure2.tight_layout(pad=0.55)
@@ -1189,9 +1414,9 @@ class Ui_MainWindow(QMainWindow):
             if self.contrast==0:
 
                 
-                self.ax2.set_ylabel("phase shift in radians ")
+                self.ax2.set_ylabel(self.text[self.phase_amp][self.ind])
             else:
-                self.ax2.set_ylabel("delta values ")
+                self.ax2.set_ylabel(self.ylabel_contrast[self.phase_amp])
             
             #self.ax2.set_ylabel("Projection {}".format(self.ind + 1))
             self.figure2.tight_layout()
@@ -1240,16 +1465,32 @@ class Ui_MainWindow(QMainWindow):
                 msk=self.RoiDraw.getMask(self.ROI_mask)
                 msk=msk.astype(int)
                 
-                for img in self.X1:
-                    tmp1=img*msk
-                    tmp2=tmp1[np.nonzero(tmp1)]
+                if self.phase_amp==0:
                     
-                    mean_ROI.append((np.mean(tmp2)))
-                for img in self.X03:
-                    tmp1=img*msk
-                    tmp2=tmp1[np.nonzero(tmp1)]
+                
+                    for img in self.X1:
+                        tmp1=img*msk
+                        tmp2=tmp1[np.nonzero(tmp1)]
+                        
+                        mean_ROI.append((np.mean(tmp2)))
+                    for img in self.X3:
+                        tmp1=img*msk
+                        tmp2=tmp1[np.nonzero(tmp1)]
+                        
+                        mean_abs.append((np.mean(tmp2)))  
+                        
+                else:
                     
-                    mean_abs.append((np.mean(tmp2)))  
+                    for img in self.X1_previous_phase:
+                        tmp1=img*msk
+                        tmp2=tmp1[np.nonzero(tmp1)]
+                        
+                        mean_ROI.append((np.mean(tmp2)))
+                    for img in self.X1:
+                        tmp1=img*msk
+                        tmp2=tmp1[np.nonzero(tmp1)]
+                        
+                        mean_abs.append((np.mean(tmp2)))  
                     
                   
                 
@@ -1262,12 +1503,12 @@ class Ui_MainWindow(QMainWindow):
                     #ax_mean = fig_mean.add_subplot(111)
                     ax_mean.set_xlabel('energy [KeV]')
                     ax_mean.set_ylabel("delta " "("" \u03B4"")")
-                    ax_mean.set_title('delta spectra for sample thickness={} micron'.format(self.dz) , horizontalalignment='center', verticalalignment='top')
+                    ax_mean.set_title('Spectra from phase images for sample thickness={} micron'.format(self.dz) , horizontalalignment='center', verticalalignment='top')
                     ax_mean.plot(self.energy,mean_ROI,'bo')
                     
                     ax_abs.set_xlabel('energy [KeV]')
                     ax_abs.set_ylabel("beta " "("" \u03B2"")")
-                    ax_abs.set_title('beta spectra for sample thickness={} micron'.format(self.dz) , horizontalalignment='center', verticalalignment='top')         
+                    ax_abs.set_title('Spectra from absorption images for sample thickness={} micron'.format(self.dz) , horizontalalignment='center', verticalalignment='top')         
                     ax_abs.plot(self.energy,mean_abs,'bo')
                     
                     combined_arr_beta = np.vstack((self.energy, mean_abs*1e5)).T
@@ -1281,13 +1522,13 @@ class Ui_MainWindow(QMainWindow):
                     fig_mean,(ax_mean,ax_abs) = plt.subplots(1,2)
                     #ax_mean = fig_mean.add_subplot(111)
                     ax_mean.set_xlabel('energy [KeV]')
-                    ax_mean.set_ylabel("phase shift in radians")
+                    ax_mean.set_ylabel("phase shift [rad]")
                     ax_mean.set_title('phase shift spectra', horizontalalignment='center', verticalalignment='top')
                     ax_mean.plot(self.energy,mean_ROI,'bo')
                     
                     ax_abs.set_xlabel('energy [KeV]')
-                    ax_abs.set_ylabel("Transmission [a.u]")
-                    ax_abs.set_title('Transmission spectra ', horizontalalignment='center', verticalalignment='top')         
+                    ax_abs.set_ylabel(self.text[1][self.ind])
+                    ax_abs.set_title(self.text[1][self.ind].replace(" [a.u.]", "")+' spectra', horizontalalignment='center', verticalalignment='top')         
                     ax_abs.plot(self.energy,mean_abs,'bo')
                     
                     
@@ -1313,16 +1554,32 @@ class Ui_MainWindow(QMainWindow):
                 msk=self.RoiDraw.getMask(self.ROI_mask)
                 msk=msk.astype(int)
                 
-                for img in self.X1:
-                    tmp1=img*msk
-                    tmp2=tmp1[np.nonzero(tmp1)]
+                if self.phase_amp==0:
                     
-                    var_ROI.append((np.var(tmp2)))
+                
+                    for img in self.X1:
+                        tmp1=img*msk
+                        tmp2=tmp1[np.nonzero(tmp1)]
+                        
+                        var_ROI.append((np.var(tmp2)))
+                        
+                    for img in self.X3:
+                        tmp1=img*msk
+                        tmp2=tmp1[np.nonzero(tmp1)]
+                        var_abs.append((np.var(tmp2)))
+                        
+                else:
+                    for img in self.X1_previous_phase:
+                        tmp1=img*msk
+                        tmp2=tmp1[np.nonzero(tmp1)]
+                        
+                        var_ROI.append((np.var(tmp2)))
+                        
+                    for img in self.X1:
+                        tmp1=img*msk
+                        tmp2=tmp1[np.nonzero(tmp1)]
+                        var_abs.append((np.var(tmp2)))
                     
-                for img in self.X03:
-                    tmp1=img*msk
-                    tmp2=tmp1[np.nonzero(tmp1)]
-                    var_abs.append((np.var(tmp2)))
                     
                 var_ROI=np.array(var_ROI)
                 var_abs=np.array(var_abs)
@@ -1332,13 +1589,13 @@ class Ui_MainWindow(QMainWindow):
                     fig_var,(ax_var,ax_abs) = plt.subplots(1,2)
                     #ax_var = fig_var.add_subplot(111)
                     ax_var.set_xlabel('energy [KeV]')
-                    ax_var.set_ylabel("delta " "("" \u03B4"")")
-                    ax_var.set_title('variance delta spectra for sample thickness={} micron' .format(self.dz), horizontalalignment='center', verticalalignment='top')
+                    ax_var.set_ylabel("delta variance")
+                    ax_var.set_title('delta variance spectra for sample thickness={} micron' .format(self.dz), horizontalalignment='center', verticalalignment='top')
                     ax_var.plot(self.energy,var_ROI,'-ok',color="blue")
                     
                     ax_abs.set_xlabel('energy [KeV]')
-                    ax_abs.set_ylabel("beta " "("" \u03B2"")")
-                    ax_abs.set_title('variance beta spectra for sample thickness={} micron'.format(self.dz) , horizontalalignment='center', verticalalignment='top')         
+                    ax_abs.set_ylabel("beta variance")
+                    ax_abs.set_title('beta variance spectra for sample thickness={} micron'.format(self.dz) , horizontalalignment='center', verticalalignment='top')         
                     ax_abs.plot(self.energy,var_abs,'-ok',color="blue")
                     
                     
@@ -1348,13 +1605,13 @@ class Ui_MainWindow(QMainWindow):
                     fig_var,(ax_var,ax_abs) = plt.subplots(1,2)
                     #ax_var = fig_var.add_subplot(111)
                     ax_var.set_xlabel('energy [KeV]')
-                    ax_var.set_ylabel("phase shift in radians")
-                    ax_var.set_title('variance phase shift spectra ', horizontalalignment='center', verticalalignment='top')
+                    ax_var.set_ylabel("phase shift variance")
+                    ax_var.set_title('phase variance spectra ', horizontalalignment='center', verticalalignment='top')
                     ax_var.plot(self.energy,var_ROI,'-ok',color="blue")
                     
                     ax_abs.set_xlabel('energy [KeV]')
-                    ax_abs.set_ylabel("Transmission [a.u]")
-                    ax_abs.set_title('variance transmission spectra ', horizontalalignment='center', verticalalignment='top')
+                    ax_abs.set_ylabel(self.text[1][self.ind].replace(" [a.u.]", "")+" variance")
+                    ax_abs.set_title(self.text[1][self.ind].replace(" [a.u.]", "")+' variance spectra ', horizontalalignment='center', verticalalignment='top')
                     ax_abs.plot(self.energy,var_abs,'-ok',color="blue")  
                         
                 plt.tight_layout()
@@ -1377,18 +1634,36 @@ class Ui_MainWindow(QMainWindow):
                 msk=self.RoiDraw.getMask(self.ROI_mask)
                 msk=msk.astype(int)
                 
-                for img in self.X1:
-                    tmp1=img*msk
-                    tmp2=tmp1[np.nonzero(tmp1)]
-                    
-                    std_ROI.append((np.std(tmp2)))
+                
+                if self.phase_amp==0:
                     
                     
-                for img in self.X03:
-                    tmp1=img*msk
-                    tmp2=tmp1[np.nonzero(tmp1)]
-                    
-                    std_abs.append((np.std(tmp2)))
+                    for img in self.X1:
+                        tmp1=img*msk
+                        tmp2=tmp1[np.nonzero(tmp1)]
+                        
+                        std_ROI.append((np.std(tmp2)))
+                        
+                        
+                    for img in self.X3:
+                        tmp1=img*msk
+                        tmp2=tmp1[np.nonzero(tmp1)]
+                        
+                        std_abs.append((np.std(tmp2)))
+                        
+                else:
+                    for img in self.X1_previous_phase:
+                        tmp1=img*msk
+                        tmp2=tmp1[np.nonzero(tmp1)]
+                        
+                        std_ROI.append((np.std(tmp2)))
+                        
+                        
+                    for img in self.X1:
+                        tmp1=img*msk
+                        tmp2=tmp1[np.nonzero(tmp1)]
+                        
+                        std_abs.append((np.std(tmp2))) 
 
                 std_abs=np.array(std_abs) 
                 std_ROI=np.array(std_ROI)
@@ -1398,13 +1673,13 @@ class Ui_MainWindow(QMainWindow):
                     fig_std,(ax_std,ax_abs) = plt.subplots(1,2)
                     #ax_std = fig_std.add_subplot(111)
                     ax_std.set_xlabel('energy [KeV]')
-                    ax_std.set_ylabel("delta " "("" \u03B4"")")
-                    ax_std.set_title('standard deviation delta spectra for sample thickness={} micron' .format(self.dz), horizontalalignment='center', verticalalignment='top')
+                    ax_std.set_ylabel("delta standard deviation")
+                    ax_std.set_title('delta standard deviation spectra for sample thickness={} micron' .format(self.dz), horizontalalignment='center', verticalalignment='top')
                     ax_std.plot(self.energy,std_ROI,'-ok',color="blue")
                     
                     ax_abs.set_xlabel('energy [KeV]')
-                    ax_abs.set_ylabel("beta " "("" \u03B2"")")
-                    ax_abs.set_title('standard deviation beta spectra for sample thickness={} micron'.format(self.dz) , horizontalalignment='center', verticalalignment='top')         
+                    ax_abs.set_ylabel("beta standard deviation")
+                    ax_abs.set_title('beta standard deviation spectra for sample thickness={} micron'.format(self.dz) , horizontalalignment='center', verticalalignment='top')         
                     ax_abs.plot(self.energy,std_abs,'-ok',color="blue")
                     
                     
@@ -1412,13 +1687,13 @@ class Ui_MainWindow(QMainWindow):
                     fig_std,(ax_std,ax_abs) = plt.subplots(1,2)
                     #ax_std = fig_std.add_subplot(111)
                     ax_std.set_xlabel('energy [KeV]')
-                    ax_std.set_ylabel('phase shift in radians')
-                    ax_std.set_title('standard deviation phase shift spectra ', horizontalalignment='center', verticalalignment='top')
+                    ax_std.set_ylabel('phase shift standard deviation')
+                    ax_std.set_title('phase shift standard deviation spectra ', horizontalalignment='center', verticalalignment='top')
                     ax_std.plot(self.energy,std_ROI,'-ok',color="blue")
                     
                     ax_abs.set_xlabel('energy [KeV]')
-                    ax_abs.set_ylabel('Transmission [a.u]')
-                    ax_abs.set_title('standard deviation transmission spectra ', horizontalalignment='center', verticalalignment='top')
+                    ax_abs.set_ylabel(self.text[1][self.ind].replace(" [a.u.]", "")+" standard deviation")
+                    ax_abs.set_title(self.text[1][self.ind].replace(" [a.u.]", "")+' standard deviation spectra ', horizontalalignment='center', verticalalignment='top')
                     ax_abs.plot(self.energy,std_abs,'-ok',color="blue")
                     
                 plt.tight_layout()   
@@ -1509,7 +1784,7 @@ class Ui_MainWindow(QMainWindow):
         Add the mask to the plot
         """
 
-            
+
         if self.data_==1 and self.mask_==1:
             if len(self.ROI_draw.allxpoints)!=0 and len(self.ROI_draw.allypoints)!=0 :
                 
@@ -1573,10 +1848,77 @@ class Ui_MainWindow(QMainWindow):
 
             
             if self.contrast==1:
-                QMessageBox.warning(None, 'Error',"images already converted")
+                
+                print("second time")
+                #QMessageBox.warning(None, 'Error',"images already converted")
+                self.dz = self.input_dialog.getValue()
+    
+                if self.dz:
+                    
+                    
+                
+                    
+                    print(self.dz)
+            
+                    #     self.label.setText(f'You entered: {value}')
+                    # #self.dz=get_thickness()
+                    # if value is not None:
+                    #     self.label.setText(f'You entered: {value}')
+            
+                    if self.phase_amp==0:
+                        
+                        
+                        for ii in range(self.projs):
+                            
+                            strbar = "Projection {} out of {}".format(ii + 1, self.projs)
+                            self.X1[ii], factor = convert_phase2delta(
+                                self.before_delta[ii],
+                                self.energy[ii],self.dz)
+                            self.X3[ii],_ = convert_to_beta(
+                                 self.before_beta[ii],
+                                 self.energy[ii],self.dz)
+                             
+                            
+                            
+                            self.X2[ii] = self.X1[ii, self.hcen, :].copy()
+                            progbar(ii + 1, self.projs, strbar)
+                            
+                            
+                    else:
+
+                        for ii in range(self.projs):
+                            strbar = "Projection {} out of {}".format(ii + 1, self.projs)
+                            self.X1[ii],_ = convert_to_beta(
+                                self.before_beta[ii],
+                                self.energy[ii],self.dz)
+                            self.X1_previous_phase[ii],factor = convert_phase2delta(
+                                 self.before_delta[ii],
+                                 self.energy[ii],self.dz)
+                            
+                            
+                            
+                            self.X2[ii] = self.X1[ii, self.hcen, :].copy()
+                            progbar(ii + 1, self.projs, strbar)
+                        
+                        
+                    print("\r")
+                    print("Done")
+                    # factor is negative so that we need to exchange vmin and vmax
+                    # self.vmin = self.vmax*(factor)
+                    # self.vmax = self.vmin*(factor)
+                    # self.pmin, self.pmax = self.vmin, self.vmax
+                    # self.var1=True
+                    self.update_pro()
+                    self.update_list()
+                    QMessageBox.information(None, "Processing Done", "conversion to delta contrast is completed")
+                
+                
+                
+                
+                
                 
             else:
-                
+                print("first time")
             
                 self.dz = self.input_dialog.getValue()
     
@@ -1592,26 +1934,50 @@ class Ui_MainWindow(QMainWindow):
                     # if value is not None:
                     #     self.label.setText(f'You entered: {value}')
             
-            
-                    for ii in range(self.projs):
-                        strbar = "Projection {} out of {}".format(ii + 1, self.projs)
-                        self.X1[ii], factor = convert_phase2delta(
-                            self.X1[ii],
-                            self.energy[ii],self.dz)
-                        self.X03[ii],_ = convert_to_beta(
-                            self.X03[ii],
-                            self.energy[ii],self.dz)
+                    if self.phase_amp==0:
+                        
+                        self.before_delta=self.X1.copy()
+                        self.before_beta=self.X3.copy()
+                        for ii in range(self.projs):
+                            
+                            strbar = "Projection {} out of {}".format(ii + 1, self.projs)
+                            self.X1[ii], factor = convert_phase2delta(
+                                self.X1[ii],
+                                self.energy[ii],self.dz)
+                            self.X3[ii],_ = convert_to_beta(
+                                 self.X3[ii],
+                                 self.energy[ii],self.dz)
+                             
+                            
+                            
+                            self.X2[ii] = self.X1[ii, self.hcen, :].copy()
+                            progbar(ii + 1, self.projs, strbar)
+                            
+                            
+                    else:
+                        self.before_delta=self.X1_previous_phase.copy()
+                        self.before_beta=self.X1.copy()
+                        for ii in range(self.projs):
+                            strbar = "Projection {} out of {}".format(ii + 1, self.projs)
+                            self.X1[ii],_ = convert_to_beta(
+                                self.X1[ii],
+                                self.energy[ii],self.dz)
+                            self.X1_previous_phase[ii],factor = convert_phase2delta(
+                                 self.X1_previous_phase[ii],
+                                 self.energy[ii],self.dz)
+                            
+                            
+                            
+                            self.X2[ii] = self.X1[ii, self.hcen, :].copy()
+                            progbar(ii + 1, self.projs, strbar)
                         
                         
-                        
-                        self.X2[ii] = self.X1[ii, self.hcen, :].copy()
-                        progbar(ii + 1, self.projs, strbar)
                     print("\r")
                     print("Done")
-                    self.contrast=1
                     # factor is negative so that we need to exchange vmin and vmax
                     self.vmin = self.vmax*(factor)
                     self.vmax = self.vmin*(factor)
+                    self.contrast=1
                     self.pmin, self.pmax = self.vmin, self.vmax
                     self.var1=True
                     self.update_pro()
@@ -1661,6 +2027,51 @@ class Ui_MainWindow(QMainWindow):
             
             print("No data or mask")
             QMessageBox.warning(None, 'Error',"No data or mask")
+            
+            
+    def Normalization(self):
+        """
+        Normalization using current mask
+        """
+
+
+            
+        if self.data_==1 and self.mask_==1 and self.add_mask_==1:
+            if len(self.ROI_draw.allxpoints)!=0 and len(self.ROI_draw.allypoints)!=0 :
+                print("\nNormalization using current mask")
+                self.X1[self.ind] = air_normalization(
+                    self.X1[self.ind],
+                    self.mask[self.ind],
+                )
+                self.X2[self.ind] = self.X1[self.ind, self.hcen, :].copy()
+                self.text[self.phase_amp][self.ind]="Normalized amplitude [a.u.]"
+                self.update_list()
+                self.update_pro()
+                
+                QMessageBox.information(None, "Processing Done", "Normalization of image "+ str(self.ind+1)+" is done")
+            else:
+                print("You need to define mask")
+                QMessageBox.warning(None, 'Error',"You need to define mask")
+                
+                
+                
+        elif self.load_mask_==1:
+            
+            print("\nNormalization using current mask")
+            self.X1[self.ind] = air_normalization(
+                self.X1[self.ind],
+                self.mask[self.ind],
+            )
+            self.X2[self.ind] = self.X1[self.ind, self.hcen, :].copy()
+            self.update_list()
+            self.update_pro()
+            QMessageBox.information(None, "Processing Done", "Normalization of image "+ str(self.ind+1)+" is done")
+        else:
+            
+            print("No data or mask")
+            QMessageBox.warning(None, 'Error',"No data or mask")
+            
+            
     def apply_all_masks(self):
         """
         Apply the linear phase correction using current mask to all projections
@@ -1717,6 +2128,92 @@ class Ui_MainWindow(QMainWindow):
         else:
             print("No data or mask")
             QMessageBox.warning(None, 'Error',"No data or mask")
+            
+            
+            
+    def Normalization_all(self):
+        """
+        Normalization of all projections using current mask
+        """
+
+            
+        if self.data_==1 and self.mask_==1 and self.mask_all_==1:
+            
+            if len(self.ROI_draw.allxpoints)!=0 and len(self.ROI_draw.allypoints)!=0 :
+                print(
+                    "\nNormalization of all projections using current mask"
+                )
+                for ii in range(self.projs):
+                    
+                    
+                    if self.text[self.phase_amp][ii]=="Normalized amplitude [a.u.]":
+                        
+                        print("skip! already normalized")
+                        
+                    else:
+                        
+                        self.ind = ii
+                        strbar = "Projection {} out of {}".format(ii + 1, self.projs)
+                        self.X1[ii] = air_normalization(
+                            self.X1[ii],
+                            self.mask[ii],
+                        )
+                        self.X2[ii] = self.X1[ii, self.hcen, :].copy()
+                        self.text[self.phase_amp][self.ind]="Normalized amplitude [a.u.]"
+        
+                    #self.update_pro()
+                        progbar(ii + 1, self.projs, strbar)
+                print("\r")
+                print("Done")
+                self.update_list()
+                self.update_pro()
+                QMessageBox.information(None, "Processing Done", "All images are normalized")
+            else:
+                print("You need to define mask")
+                QMessageBox.warning(None, 'Error',"You need to define mask")
+                
+                
+        elif self.load_mask_==1:
+            
+            
+            print(
+                "\nNormalization of all projections using current mask"
+            )
+   
+            
+            for ii in range(self.projs):
+                
+                
+                if self.text[self.phase_amp][ii]=="Normalized amplitude [a.u.]":
+                    
+                    print("skip! already normalized")
+                    
+                else:
+                    
+                    self.ind = ii
+                    strbar = "Projection {} out of {}".format(ii + 1, self.projs)
+                    self.X1[ii] = air_normalization(
+                        self.X1[ii],
+                        self.mask[ii],
+                    )
+                    self.X2[ii] = self.X1[ii, self.hcen, :].copy()
+                    self.text[self.phase_amp][self.ind]="Normalized amplitude [a.u.]"
+    
+                #self.update_pro()
+                    progbar(ii + 1, self.projs, strbar)
+            print("\r")
+            print("Done")
+            self.update_list()
+            self.update_pro()
+            
+            
+            
+        else:
+            print("No data or mask")
+            QMessageBox.warning(None, 'Error',"No data or mask")
+            
+            
+            
     def remove_mask(self):
         """
         Remove the current selected area from the mask
@@ -1807,6 +2304,37 @@ class Ui_MainWindow(QMainWindow):
             self.update_pro()
             self.update_list()
             QMessageBox.information(None, "Processing Done", "unwrapping of image "+ str(self.ind+1)+" is done")
+            
+            
+    def convert_mudz(self, event):
+        """
+        Converting to linear attenuation coefficient times thickness
+        """
+        
+        
+        if self.data_==0:
+            print("No data")
+            QMessageBox.warning(None, 'Error',"No data")
+        else:
+            
+        
+            print(f"\nConverting to linear attenuation coefficient times thickness {self.ind}")
+            
+            if self.text[self.phase_amp][self.ind]=="\u03BC*sample thickness [a.u.]":
+                print("skip! already converted")
+                
+            else:
+                
+                self.X1[self.ind] = convert_to_mudz(
+                    self.X1[self.ind]
+                )
+                self.X2[self.ind] = self.X1[self.ind, self.hcen, :].copy()
+                
+                self.text[self.phase_amp][self.ind]="\u03BC*sample thickness [a.u.]"
+            
+                self.update_pro()
+                self.update_list()
+                QMessageBox.information(None, "Processing Done", "converting of image "+ str(self.ind+1)+" is done")
     def unwrapping_all(self, event):
         """
         Unwrap phase of all projections
@@ -1834,6 +2362,46 @@ class Ui_MainWindow(QMainWindow):
         self.update_pro()
         self.update_list()
         QMessageBox.information(None, "Processing Done", "unwrapping of all images is done")
+        
+    def convert_mudz_all(self, event):
+        """
+        Converting all images
+        """
+        if self.data_==0:
+            print("No data")
+            QMessageBox.warning(None, 'Error',"No data")
+            
+        else:
+            
+            print("\nConverting all images")
+            for ii in range(self.projs):
+                
+                
+                if self.text[self.phase_amp][ii]=="\u03BC*sample thickness [a.u.]":
+                    
+                    print("skip! already converted")
+                    
+                
+                else:
+                    
+                
+                
+                    self.ind = ii
+                    strbar = "Projection {} out of {}".format(ii + 1, self.projs)
+                    self.X1[ii] = convert_to_mudz(
+                        self.X1[ii]
+                    )
+                    
+                    self.text[self.phase_amp][ii]="\u03BC*sample thickness [a.u.]"
+                    self.X2[self.ind] = self.X1[self.ind, self.hcen, :].copy()
+        
+                    self.update_pro()
+                    progbar(ii + 1, self.projs, strbar)
+            print("\r")
+            print("Done")
+        self.update_pro()
+        self.update_list()
+        QMessageBox.information(None, "Processing Done", "Converting of all images is done")
     def save_masks(self):
         
         """
@@ -1924,39 +2492,67 @@ class Ui_MainWindow(QMainWindow):
         
             print("\nInterpolate the image accross the different energies")
     
-            for ii in range(self.projs):
-                self.ind = ii
-                strbar = "Projection {} out of {}".format(ii+1, self.projs)
-                imgin = self.X1[ii].copy()
-                self.X1[ii] = interp_spectral(
-                    imgin,
-                    self.pixel[ii][0],
-                    self.energy[ii],
-                    self.X1[self.maxind],
-                    self.pxmaxenergy,
-                    self.maxenergy,
-                )
     
-                
-                progbar(ii+1, self.projs, strbar)
-                
-                
-                
-            for ii in range(self.projs):
-                self.ind = ii
-                strbar = "Projection {} out of {}".format(ii+1, self.projs)
-                imgin = self.X03[ii].copy()
-                self.X03[ii] = interp_spectral(
-                    imgin,
-                    self.pixel[ii][0],
-                    self.energy[ii],
-                    self.X03[self.maxind],
-                    self.pxmaxenergy,
-                    self.maxenergy,
-                )+1e-12
     
+            if self.phase_amp==0:
                 
-                progbar(ii+1, self.projs, strbar)
+                for ii in range(self.projs):
+                    self.ind = ii
+                    strbar = "Projection {} out of {}".format(ii+1, self.projs)
+                    imgin = self.X1[ii].copy()
+                    imgin2=self.X3[ii].copy()
+                    self.X1[ii] = interp_spectral(
+                        imgin,
+                        self.pixel[ii][0],
+                        self.energy[ii],
+                        self.X1[self.maxind],
+                        self.pxmaxenergy,
+                        self.maxenergy,
+                    )
+                    
+                    
+                    self.X3[ii] = interp_spectral(
+                        imgin2,
+                        self.pixel[ii][0],
+                        self.energy[ii],
+                        self.X3[self.maxind],
+                        self.pxmaxenergy,
+                        self.maxenergy,
+                        )+1e-12
+                    
+                    progbar(ii+1, self.projs, strbar)
+            else:
+                
+                for ii in range(self.projs):
+                    self.ind = ii
+                    strbar = "Projection {} out of {}".format(ii+1, self.projs)
+                    imgin = self.X1[ii].copy()
+                    imgin2=self.X1_previous_phase[ii].copy()
+                    self.X1[ii] = interp_spectral(
+                        imgin,
+                        self.pixel[ii][0],
+                        self.energy[ii],
+                        self.X1[self.maxind],
+                        self.pxmaxenergy,
+                        self.maxenergy,
+                    )+1e-12
+                    
+                    
+                    self.X1_previous_phase[ii] = interp_spectral(
+                        imgin2,
+                        self.pixel[ii][0],
+                        self.energy[ii],
+                        self.X1_previous_phase[self.maxind],
+                        self.pxmaxenergy,
+                        self.maxenergy,
+                        )
+                    
+                    progbar(ii+1, self.projs, strbar)
+                
+                
+                
+                
+
             print("\r")
             print("Done")
             self.update_pro()
@@ -1972,44 +2568,65 @@ class Ui_MainWindow(QMainWindow):
             QMessageBox.warning(None, 'Error',"No data")
         else:
             
-        
-            print("\nAlignment of the images accross the different energies")
-            print('Estimating shifts')
-            self.shift = np.zeros((self.projs, 2))
-            # The reference is the projection at the highest energy
-            refimg = self.X1[
-                self.maxind,
-                self.limv0:self.limvf,
-                self.limh0:self.limhf,
-            ].copy()
-            for ii in range(self.projs):
-                print(f"\nEnergy of {self.energy[ii]:0.4f} keV")
-                if self.energy[ii] == self.maxenergy:
-                    print("The highest energy. It must have 0 shift")
-                offsetimg = self.X1[
-                    ii,
+            
+            
+            if self.phase_amp==1 and self.use_shifts==1:
+                print("using shifts estimated from phase contrast images ")
+                
+                for ii in range(self.projs):
+                    
+                    self.shift[self.phase_amp,:]= self.shift[0,:]
+                    self.X1[ii] = shift_image(self.X1[ii], shift=self.shift[0,ii])
+                QMessageBox.information(None, "Processing Done", "alignement is done")
+            
+            elif self.phase_amp==1 and self.use_shifts==0:
+                
+                QMessageBox.warning(None, 'Error',"Please estimate shifts using phase contrast images")
+                
+            
+            else:
+            
+            
+                print("\nAlignment of the images accross the different energies")
+                print('Estimating shifts')
+                self.shift = np.zeros((2,self.projs, 2))
+                # The reference is the projection at the highest energy
+                refimg = self.X1[
+                    self.maxind,
                     self.limv0:self.limvf,
-                    self.limh0:self.limhf
-                ]
-                self.shift[ii], error, diffphase = phase_cross_correlation(
-                    refimg,
-                    offsetimg,
-                    # upsample_factor=100,
-                    # overlap_ratio=0.9,
-                )
-                print(f"Offset for image {ii+1}  (y,x): {self.shift[ii]}")
-                print(f"Shifting the image to align it")
-                self.X1[ii] = shift_image(self.X1[ii], shift=self.shift[ii])
-                self.X03[ii]=shift_image(self.X03[ii],shift=self.shift[ii])+1e-12
-            self.update_pro()
-            self.update_list()
-            QMessageBox.information(None, "Processing Done", "alignement is done")
+                    self.limh0:self.limhf,
+                ].copy()
+                for ii in range(self.projs):
+                    print(f"\nEnergy of {self.energy[ii]:0.4f} keV")
+                    if self.energy[ii] == self.maxenergy:
+                        print("The highest energy. It must have 0 shift")
+                    offsetimg = self.X1[
+                        ii,
+                        self.limv0:self.limvf,
+                        self.limh0:self.limhf
+                    ]
+                    self.shift[self.phase_amp,ii], error, diffphase = phase_cross_correlation(
+                        refimg,
+                        offsetimg,
+                        # upsample_factor=100,
+                        # overlap_ratio=0.9,
+                    )
+                    print(f"Offset for image {ii+1}  (y,x): {self.shift[self.phase_amp,ii]}")
+                    print(f"Shifting the image to align it")
+                    self.X1[ii] = shift_image(self.X1[ii], shift=self.shift[self.phase_amp,ii])
+                    self.use_shifts=1
+                    #self.X03[ii]=shift_image(self.X03[ii],shift=self.shift[self.phase_amp,ii])+1e-12
+                self.update_pro()
+                self.update_list()
+                QMessageBox.information(None, "Processing Done", "alignement is done")
 
 
     def plot_shifts(self, event):
         """
         Plot the shifts
         """
+        
+
         if self.data_==0:
             print("No data")
             QMessageBox.warning(None, 'Error',"No data")
@@ -2017,10 +2634,10 @@ class Ui_MainWindow(QMainWindow):
             
             fig_shifts = plt.figure()
             ax_shifts = fig_shifts.add_subplot(111)
-            ax_shifts.plot(self.shift[:, 0], 'ro-', label="Vertical")
-            ax_shifts.plot(self.shift[:, 1], 'b*--', label="Horizontal")
+            ax_shifts.plot(self.shift[self.phase_amp,:, 0], 'ro-', label="Vertical")
+            ax_shifts.plot(self.shift[self.phase_amp,:, 1], 'b*--', label="Horizontal")
             ax_shifts.set_xlabel('image index')
-            ax_shifts.set_ylabel('shifts in [pixels]')
+            ax_shifts.set_ylabel('shifts in pixels')
             
             plt.legend()
             plt.show()
@@ -2054,18 +2671,37 @@ class Ui_MainWindow(QMainWindow):
         """
         Move image left
         """
+        
+        print("here")
         if self.data_==0:
             print("No data")
             QMessageBox.warning(None, 'Error',"No data")
         else:
             
             print("Moving left")
-            self.shift[self.ind, 1] -= self.alignpixel
-            self.X1[self.ind] = shift_image(
-                self.X1[self.ind], (0, -self.alignpixel))
+            self.shift[self.phase_amp,self.ind, 1] -= self.alignpixel
+            
+            self.shift[np.abs(self.phase_amp-1),self.ind,1]=self.shift[self.phase_amp,self.ind, 1]
+            
+            if self.phase_amp==0:
+                self.X1[self.ind] = shift_image(
+                     self.X1[self.ind], (0, -self.alignpixel))
+                
+                self.X3[self.ind] = shift_image(
+                     self.X3[self.ind], (0, -self.alignpixel))+1e-12
+            else:
+                self.X1[self.ind] = shift_image(
+                     self.X1[self.ind], (0, -self.alignpixel))+1e-12
+                self.X1_previous_phase[self.ind]=shift_image(self.X1_previous_phase[self.ind],(0, -self.alignpixel))
+                
+           
+            
+           
+            # self.X1[self.ind] = shift_image(
+            #     self.X1[self.ind], (0, -self.alignpixel))+1e-12
               
-            self.X03[self.ind] = shift_image(
-                self.X03[self.ind], (0, -self.alignpixel))+1e-12
+            # self.X03[self.ind] = shift_image(
+            #     self.X03[self.ind], (0, -self.alignpixel))+1e-12
                 
             
             self.X2[self.ind] = self.X1[self.ind, self.hcen, :].copy()
@@ -2082,12 +2718,30 @@ class Ui_MainWindow(QMainWindow):
             
         
             print("Moving right")
-            self.shift[self.ind, 1] += self.alignpixel
-            self.X1[self.ind] = shift_image(
-                self.X1[self.ind], (0, self.alignpixel))
+            self.shift[self.phase_amp,self.ind, 1] += self.alignpixel
+            self.shift[np.abs(self.phase_amp-1),self.ind,1]=self.shift[self.phase_amp,self.ind, 1]
+            
+            if self.phase_amp==0:
                 
-            self.X03[self.ind] = shift_image(
-                self.X03[self.ind], (0, self.alignpixel))+1e-12    
+            
+                self.X1[self.ind] = shift_image(
+                    self.X1[self.ind], (0, self.alignpixel))
+                
+            
+                self.X3[self.ind] = shift_image(
+                    self.X3[self.ind], (0, self.alignpixel))+1e-12    
+            
+            
+            else:
+                self.X1[self.ind] = shift_image(
+                    self.X1[self.ind], (0, self.alignpixel))+1e-12
+                
+                self.X1_previous_phase[self.ind]=shift_image(
+                    self.X1_previous_phase[self.ind], (0, self.alignpixel))
+                
+                
+                
+                
             
             self.X2[self.ind] = self.X1[self.ind, self.hcen, :].copy()
             self.update_pro()
@@ -2104,11 +2758,23 @@ class Ui_MainWindow(QMainWindow):
             
         
             print("Moving up")
-            self.shift[self.ind, 0] -= self.alignpixel
-            self.X1[self.ind] = shift_image(
-                self.X1[self.ind], (-self.alignpixel, 0))
-            self.X03[self.ind] = shift_image(
-                self.X03[self.ind], (-self.alignpixel, 0))+1e-12  
+            self.shift[self.phase_amp,self.ind, 0] -= self.alignpixel
+            self.shift[np.abs(self.phase_amp-1),self.ind,0]= self.shift[self.phase_amp,self.ind, 0]
+            
+            
+            if self.phase_amp==0:
+                
+                self.X1[self.ind] = shift_image(
+                    self.X1[self.ind], (-self.alignpixel, 0))
+                self.X3[self.ind] = shift_image(
+                    self.X3[self.ind], (-self.alignpixel, 0))+1e-12  
+                
+            else:
+                self.X1[self.ind] = shift_image(
+                    self.X1[self.ind], (-self.alignpixel, 0))+1e-12
+                self.X1_previous_phase[self.ind]=shift_image(
+                    self.X1_previous_phase[self.ind], (-self.alignpixel, 0))
+                
              
             self.X2[self.ind] = self.X1[self.ind, self.hcen, :].copy()
             self.update_pro()
@@ -2124,12 +2790,29 @@ class Ui_MainWindow(QMainWindow):
             
         
             print("Moving down")
-            self.shift[self.ind, 0] += self.alignpixel
-            self.X1[self.ind] = shift_image(
+            self.shift[self.phase_amp,self.ind, 0] += self.alignpixel
+            self.shift[np.abs(self.phase_amp-1),self.ind,0]= self.shift[self.phase_amp,self.ind, 0]
+            
+            
+            
+            if self.phase_amp==0:
+                
+                self.X1[self.ind] = shift_image(
                 self.X1[self.ind], (self.alignpixel, 0))
+            
+                self.X3[self.ind] = shift_image(
+                self.X3[self.ind], (self.alignpixel, 0))+1e-12
+            
+            else:
+               self.X1[self.ind] = shift_image(
+                   self.X1[self.ind], (self.alignpixel, 0))+1e-12
+               
+               self.X1_previous_phase[self.ind] = shift_image(
+                   self.X1_previous_phase[self.ind], (self.alignpixel, 0))
+            
              
-            self.X03[self.ind] = shift_image(
-                self.X03[self.ind], (self.alignpixel, 0))+1e-12
+            # self.X03[self.ind] = shift_image(
+            #     self.X03[self.ind], (self.alignpixel, 0))+1e-12
              
             self.X2[self.ind] = self.X1[self.ind, self.hcen, :].copy()
             self.update_pro()
@@ -2185,12 +2868,13 @@ class Ui_MainWindow(QMainWindow):
         """
         Crop images down
         """
+       
         
         if self.data_==0:
             print("No data")
             QMessageBox.warning(None, 'Error',"No data")
         else:
-            
+            print(self.cb)
             cropv = self.cropval
             self.cb += cropv
             print("Cropping {} pixels bottom".format(self.cb))
@@ -2201,14 +2885,21 @@ class Ui_MainWindow(QMainWindow):
         """
         Definitive cropping of the image
         """
+        
+
+        
         if self.data_==0:
             print("No data")
             QMessageBox.warning(None, 'Error',"No data")
         else:
-
-            self.X1 = self.X1[:, self.limv0:self.limvf, self.limh0:self.limhf]
-
-            self.X03 = self.X03[:, self.limv0:self.limvf, self.limh0:self.limhf]
+            if self.phase_amp==0:
+                
+                self.X1 = self.X1[:, self.limv0:self.limvf, self.limh0:self.limhf]
+                self.X3=self.X3[:, self.limv0:self.limvf, self.limh0:self.limhf]
+            else:
+                self.X1 = self.X1[:, self.limv0:self.limvf, self.limh0:self.limhf]
+                self.X1_previous_phase=self.X1_previous_phase[:, self.limv0:self.limvf, self.limh0:self.limhf]
+            #self.X03 = self.X03[:, self.limv0:self.limvf, self.limh0:self.limhf]
             self.projs, self.rows, self.cols = self.X1.shape
             self.hcen = int(self.rows / 2.0)
             self.X2 = self.X1[:, self.hcen, :].copy()
@@ -2326,7 +3017,7 @@ class Ui_MainWindow(QMainWindow):
         """
         Set the amount of pixels to manual alignment
         """
-        
+
         if self.data_==0:
             print("No data")
             QMessageBox.warning(None, 'Error',"No data")
@@ -2339,6 +3030,7 @@ class Ui_MainWindow(QMainWindow):
         """
         Set the amount of pixels to crop
         """
+
         if self.data_==0:
             print("No data")
             QMessageBox.warning(None, 'Error',"No data")
@@ -2348,7 +3040,7 @@ class Ui_MainWindow(QMainWindow):
             print("Setting cropping value to {} pixels".format(self.cropval))
 
     def save_projection(self):
-        
+
         if self.data_==0:
             print("Nothing to save")
             QMessageBox.warning(None, 'Error',"Nothing to save")
@@ -2373,7 +3065,7 @@ class Ui_MainWindow(QMainWindow):
                 print("Please select a directory for saving")
 
     def save_all_projection(self):
-        
+
         
         if self.data_==0:
             print("Nothing to save")
