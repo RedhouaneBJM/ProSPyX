@@ -20,7 +20,7 @@ Inside the created folder after downloading/clone github repository files open a
 * Type `pip install -r requirements.txt`
 
 ## Give it a try
-* Download dataset from `link to cloud` or use your collected dataset
+* Download dataset from `https://zenodo.org/records/10000776` or use your dataset
 * run wtih `python ProSPyX.py` from a terminal
 
 __Note__: if you want to use your own dataset, there are some prior requirements to follow regarding the main folder and subfolder names and how the data and metadata are stored inside the hierarchical data format (HDF) file.After the phase retrieval step each ptychographic reconstruction should be stored in one HDF file with its metadata. Each file is saved separately inside a subfolder. All subfolders must be stored in a unique main folder. The name of all HDF files and subfolders must contain the same suffix which is unique to this dataset (you can download our dataset to get a better idea). the purpose of that is to be able to find and distinguish this data set. <br>
