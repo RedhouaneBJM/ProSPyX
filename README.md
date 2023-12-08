@@ -28,7 +28,7 @@ Below is an example of the structure of an HDF file. regarding the name of HDF f
 '_object_0_', '_dx_spec_' and '_energy_' refers to the complex transmittivity function of the sample, pixel size, and energy of acquisition respectively.
 
 ```
-HDF5 "xxx_prefix_yyy.h5" {
+HDF5 "prefix_xxx_yyy.h5" {
 GROUP "/" {
    GROUP "reconstruction" {
       GROUP "p" {
