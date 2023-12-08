@@ -23,12 +23,12 @@ Inside the created folder after downloading/clone github repository files open a
 * Download dataset from `https://zenodo.org/records/10000776` or use your dataset
 * run wtih `python ProSPyX.py` from a terminal
 
-__Note__: if you want to use your own dataset, there are some prior requirements to follow regarding the main folder and subfolder names and how the data and metadata are stored inside the hierarchical data format (HDF) file.After the phase retrieval step each ptychographic reconstruction should be stored in one HDF file with its metadata. Each file is saved separately inside a subfolder. All subfolders must be stored in a unique main folder. The name of all HDF files and subfolders must contain the same suffix which is unique to this dataset (you can download our dataset to get a better idea). the purpose of that is to be able to find and distinguish this data set. <br>
-Below is an example of the structure of an HDF file. regarding the name of HDF file, _xxx_ and _yyy_ are two different strings and may differ from one HDF file to another. _suffix_ must be the same for all HDF files as explained above.<br>
+__Note__: if you want to use your own dataset, there are some prior requirements to follow regarding the main folder and subfolder names and how the data and metadata are stored inside the hierarchical data format (HDF) file.After the phase retrieval step each ptychographic reconstruction should be stored in one HDF file with its metadata. Each file is saved separately inside a subfolder. All subfolders must be stored in a unique main folder. The name of all HDF files and subfolders must contain the same prefix which is unique to this dataset (you can download our dataset to get a better idea). the purpose of that is to be able to find and distinguish this data set. <br>
+Below is an example of the structure of an HDF file. regarding the name of HDF file, _xxx_ and _yyy_ are two different strings and may differ from one HDF file to another. _prefix_ must be the same for all HDF files as explained above.<br>
 '_object_0_', '_dx_spec_' and '_energy_' refers to the complex transmittivity function of the sample, pixel size, and energy of acquisition respectively.
 
 ```
-HDF5 "xxx_suffix_yyy.h5" {
+HDF5 "xxx_prefix_yyy.h5" {
 GROUP "/" {
    GROUP "reconstruction" {
       GROUP "p" {
