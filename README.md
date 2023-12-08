@@ -22,6 +22,7 @@ Inside the created folder after downloading/clone github repository files open a
 ## Give it a try
 * Download dataset from `https://zenodo.org/records/10000776` or use your dataset
 * run wtih `python ProSPyX.py` from a terminal
+* To import the data, go to the '_Data_' tab. First, enter the '_Prefix_' and validate it by pressing the enter key. After that, click on '_Browse_' to define the path where the data is stored
 
 __Note__: if you want to use your own dataset, there are some prior requirements to follow regarding the main folder and subfolder names and how the data and metadata are stored inside the hierarchical data format (HDF) file.After the phase retrieval step each ptychographic reconstruction should be stored in one HDF file with its metadata. Each file is saved separately inside a subfolder. All subfolders must be stored in a unique main folder. The name of all HDF files and subfolders must contain the same prefix which is unique to this dataset (you can download our dataset to get a better idea). the purpose of that is to be able to find and distinguish this data set. <br>
 Below is an example of the structure of an HDF file. regarding the name of HDF file, _xxx_ and _yyy_ are two different strings and may differ from one HDF file to another. _prefix_ must be the same for all HDF files as explained above.<br>
