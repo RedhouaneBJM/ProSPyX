@@ -19,6 +19,10 @@ ProSPyX requires Python 3.9 or an older version.
 Inside the created folder after downloading/clone github repository files open a terminal :
 * Type `pip install -r requirements.txt`
 
+#### Important Note
+
+To ensure the proper functioning of the software, please create  a virtual environment to install the requirements (`conda create --name your_env_name` if you have Anaconda installed. For non-anaconda users, `virtualenv your_env_name` if the package virtualenv is installed ). Newer versions of dependencies, such as numpy or matplotlib, might lead to deprecation warnings or even total crashes. Utilizing a virtual environment helps create a controlled and isolated environment, preventing compatibility issues and ensuring a seamless experience.
+
 ## Give it a try
 * Download dataset from `https://zenodo.org/records/10000776` or use your dataset
 * run wtih `python ProSPyX.py` from a terminal
