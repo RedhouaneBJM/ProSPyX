@@ -21,8 +21,7 @@ Inside the created folder after downloading/clone github repository files open a
 
 #### Important Note
 
-To ensure the proper functioning of the software, please create a virtual environment dedicated to ProSPyX to install the requirements (`conda create --name your_env_name` if you have Anaconda installed. For non-anaconda users, `virtualenv your_env_name` if the package virtualenv is installed) to avoid any potential interference with already installed packages. Newer versions of dependencies might lead to deprecation warnings or even total crashes. Utilizing a virtual environment helps create a controlled and isolated environment, preventing compatibility issues and ensuring a seamless experience.
-
+To ensure the proper functioning of the software, please create a virtual environment dedicated to ProSPyX to install the requirements to avoid any potential interference with already installed packages (`conda create --name your_env_name` if you have Anaconda installed. For non-anaconda users, `virtualenv your_env_name` if the package virtualenv is installed). Newer versions of dependencies might lead to deprecation warnings or even total crashes.
 ## Give it a try
 * Download the dataset from `https://zenodo.org/records/10000776` or you can use your own dataset
 * run with `python ProSPyX.py` from a terminal
