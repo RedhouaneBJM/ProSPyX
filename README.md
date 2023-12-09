@@ -8,7 +8,7 @@ ProSPyX is an open-source Python software, developed using PyQt5, suitable for f
 ## Download of the package
 ### Using the zip file
 * Click on the green button labeled '_Code_' on the right-hand side.
-* Click on '_Download ZIP_' option from the drop down menu.
+* Click on '_Download ZIP_' option from the drop-down menu.
 * Unzip '_ProSPyX-main_' file.
 ### Using Git
 * Type on a terminal `git clone https://github.com/RedhouaneBJM/ProSPyX.git`
@@ -21,16 +21,16 @@ Inside the created folder after downloading/clone github repository files open a
 
 #### Important Note
 
-To ensure the proper functioning of the software, please create  a virtual environment to install the requirements (`conda create --name your_env_name` if you have Anaconda installed. For non-anaconda users, `virtualenv your_env_name` if the package virtualenv is installed ). Newer versions of dependencies, such as numpy or matplotlib, might lead to deprecation warnings or even total crashes. Utilizing a virtual environment helps create a controlled and isolated environment, preventing compatibility issues and ensuring a seamless experience.
+To ensure the proper functioning of the software, please create a virtual environment dedicated to ProSPyX to install the requirements (`conda create --name your_env_name` if you have Anaconda installed. For non-anaconda users, `virtualenv your_env_name` if the package virtualenv is installed) to avoid any potential interference with already installed packages. Newer versions of dependencies might lead to deprecation warnings or even total crashes. Utilizing a virtual environment helps create a controlled and isolated environment, preventing compatibility issues and ensuring a seamless experience.
 
 ## Give it a try
-* Download dataset from `https://zenodo.org/records/10000776` or use your dataset
-* run wtih `python ProSPyX.py` from a terminal
+* Download the dataset from `https://zenodo.org/records/10000776` or you can use your own dataset
+* run with `python ProSPyX.py` from a terminal
 * To import the data, go to the '_Data_' tab. First, enter the '_Prefix_' and validate it by pressing the enter key. After that, click on '_Browse_' to define the path where the data is stored
 
-__Note__: if you want to use your own dataset, there are some prior requirements to follow regarding the main folder and subfolder names and how the data and metadata are stored inside the hierarchical data format (HDF) file.After the phase retrieval step each ptychographic reconstruction should be stored in one HDF file with its metadata. Each file is saved separately inside a subfolder. All subfolders must be stored in a unique main folder. The name of all HDF files and subfolders must contain the same prefix which is unique to this dataset (you can download our dataset to get a better idea). the purpose of that is to be able to find and distinguish this data set. <br>
-Below is an example of the structure of an HDF file. regarding the name of HDF file, _xxx_ and _yyy_ are two different strings and may differ from one HDF file to another. _prefix_ must be the same for all HDF files as explained above.<br>
-'_object_0_', '_dx_spec_' and '_energy_' refers to the complex transmittivity function of the sample, pixel size, and energy of acquisition respectively.
+__Note__: if you want to use your dataset, there are some prior requirements regarding the main folder and subfolder names and how the data and metadata are stored inside the hierarchical data format (HDF) file. After the phase retrieval step, each ptychographic reconstruction should be stored in one HDF file with its metadata. Each file is saved separately inside a subfolder. All subfolders must be stored in a unique main folder. The name of all HDF files and subfolders must contain the same prefix which is unique to this dataset (you can download our dataset to get a better idea). The purpose of that is to be able to find and distinguish this data set. <br>
+Below is an example of the structure of an HDF file. Regarding the name of HDF file, _xxx_ and _yyy_ are two different strings and may differ from one HDF file to another. _prefix_ must be the same for all HDF files as explained above.<br>
+'_object_0_', '_dx_spec_' and '_energy_' refers to the complex transmittivity function of the sample, pixel size, and acquisition energy, respectively.
 
 ```
 HDF5 "prefix_xxx_yyy.h5" {
