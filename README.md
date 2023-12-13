@@ -26,6 +26,7 @@ To ensure the proper functioning of the software, please create a virtual enviro
 * Download the dataset from `https://zenodo.org/records/10000776` or you can use your own dataset
 * run with `python ProSPyX.py` from a terminal
 * To import the data, go to the '_Data_' tab. First, enter the '_Prefix_' and validate it by pressing the enter key. After that, click on '_Browse_' to define the path where the data is stored
+* A video tutorial demonstrating how to process X-ray spectral ptychography images using ProSPyX is available on YouTube at https://www.youtube.com/watch?v=l9P8i0mD_UA.
 
 __Note__: if you want to use your dataset, there are some prior requirements regarding the main folder and subfolder names and how the data and metadata are stored inside the hierarchical data format (HDF) file. After the phase retrieval step, each ptychographic reconstruction should be stored in one HDF file with its metadata. Each file is saved separately inside a subfolder. All subfolders must be stored in a unique main folder. The name of all HDF files and subfolders must contain the same prefix which is unique to this dataset (you can download our dataset to get a better idea). The purpose of that is to be able to find and distinguish this data set. <br>
 Below is an example of the structure of an HDF file. Regarding the name of HDF file, _xxx_ and _yyy_ are two different strings and may differ from one HDF file to another. _prefix_ must be the same for all HDF files as explained above.<br>
