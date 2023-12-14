@@ -139,9 +139,23 @@ class Ui_MainWindow(QMainWindow):
     ylabel_contrast.append("Delta values")
     ylabel_contrast.append("Beta values")
     
+    axyd=''
+    axyb=''
+    td=''
+    tb=''
     
+    Vaxyd=''
+    Vaxyb=''
+    Vtd=''
+    Vtb=''
     
+    Saxyd=''
+    Saxyb=''
+    Std=''
+    Stb=''
     
+    Svb=1
+    Svd=1
     plt.close(fig='before')
     
     list_cmap=plt.colormaps()
@@ -245,7 +259,7 @@ class Ui_MainWindow(QMainWindow):
         
         
         
-        self.radioButton_absorption = QtWidgets.QRadioButton("Amplitude", self.tab)
+        self.radioButton_absorption = QtWidgets.QRadioButton("Absorption", self.tab)
         self.radioButton_absorption.setObjectName("radioButton_absorption")
         self.gridLayout_13.addWidget(self.radioButton_absorption, 5, 1, 1, 1)
     
@@ -520,26 +534,26 @@ class Ui_MainWindow(QMainWindow):
         self.gridLayout_2.setObjectName("gridLayout_2")
         self.LVmin = QtWidgets.QLabel(self.frame_2)
         self.LVmin.setObjectName("LVmin")
-        self.gridLayout_2.addWidget(self.LVmin, 1, 1, 1, 1)
+        self.gridLayout_2.addWidget(self.LVmin, 2, 1, 1, 1)
         self.VMIN = QtWidgets.QLineEdit(self.frame_2)
         self.VMIN.setValidator(self.DoubleInputValidation)
         self.VMIN.setObjectName("VMIN")
-        self.gridLayout_2.addWidget(self.VMIN, 1, 2, 1, 1)
+        self.gridLayout_2.addWidget(self.VMIN, 2, 2, 1, 1)
         self.VMAX = QtWidgets.QLineEdit(self.frame_2)
         self.VMAX.setValidator(self.DoubleInputValidation)
         self.VMAX.setObjectName("VMAX")
-        self.gridLayout_2.addWidget(self.VMAX, 1, 3, 1, 1)
+        self.gridLayout_2.addWidget(self.VMAX, 2, 3, 1, 1)
         self.LVMax = QtWidgets.QLabel(self.frame_2)
         self.LVMax.setObjectName("LVMax")
-        self.gridLayout_2.addWidget(self.LVMax, 1, 4, 1, 1)
+        self.gridLayout_2.addWidget(self.LVMax, 2, 4, 1, 1)
         self.VMIN_2 = QtWidgets.QLineEdit(self.frame_2)
         self.VMIN_2.setValidator(self.DoubleInputValidation)
         self.VMIN_2.setObjectName("VMIN_2")
-        self.gridLayout_2.addWidget(self.VMIN_2, 2, 2, 1, 1)
+        self.gridLayout_2.addWidget(self.VMIN_2, 1, 2, 1, 1)
         self.VMAX_2 = QtWidgets.QLineEdit(self.frame_2)
         self.VMAX_2.setValidator(self.DoubleInputValidation)
         self.VMAX_2.setObjectName("VMAX_2")
-        self.gridLayout_2.addWidget(self.VMAX_2, 2, 3, 1, 1)
+        self.gridLayout_2.addWidget(self.VMAX_2, 1, 3, 1, 1)
         self.horizontalSlider = QtWidgets.QSlider(self.frame_2)
         self.horizontalSlider.setOrientation(QtCore.Qt.Horizontal)
         self.horizontalSlider.setObjectName("horizontalSlider")
@@ -555,10 +569,10 @@ class Ui_MainWindow(QMainWindow):
         self.gridLayout_2.addLayout(self.horizontalLayout, 0, 5, 1, 1)
         self.label_vmin2 = QtWidgets.QLabel(self.frame_2)
         self.label_vmin2.setObjectName("label_vmin2")
-        self.gridLayout_2.addWidget(self.label_vmin2, 2, 1, 1, 1)
+        self.gridLayout_2.addWidget(self.label_vmin2, 1, 1, 1, 1)
         self.label_vmax2 = QtWidgets.QLabel(self.frame_2)
         self.label_vmax2.setObjectName("label_vmax2")
-        self.gridLayout_2.addWidget(self.label_vmax2, 2, 4, 1, 1)
+        self.gridLayout_2.addWidget(self.label_vmax2, 1, 4, 1, 1)
         self.gridLayout_18.addWidget(self.frame_2, 4, 1, 1, 2)
         MainWindow.setCentralWidget(self.centralwidget)
         for i in range (0,len(self.list_cmap)):
@@ -656,13 +670,13 @@ class Ui_MainWindow(QMainWindow):
         item = self.tableWidget.horizontalHeaderItem(2)
         item.setText(_translate("MainWindow", "Min_B"))
         item = self.tableWidget.horizontalHeaderItem(3)
-        item.setText(_translate("MainWindow", "Min_A"))
-        item = self.tableWidget.horizontalHeaderItem(4)
         item.setText(_translate("MainWindow", "Max_B"))
+        item = self.tableWidget.horizontalHeaderItem(4)
+        item.setText(_translate("MainWindow", "Min_A"))
         item = self.tableWidget.horizontalHeaderItem(5)
         item.setText(_translate("MainWindow", "Max_A"))
         self.label_path.setText(_translate("MainWindow", "            Path:"))
-        self.Suffix.setText(_translate("MainWindow", "       Suffix :"))
+        self.Suffix.setText(_translate("MainWindow", "       Prefix :"))
         self.pushButton_browse.setText(_translate("MainWindow", "Browse"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("MainWindow", "Data"))
         self.pushButton_SaveMasks_.setText(_translate("MainWindow", "Save mask"))
@@ -1156,14 +1170,14 @@ class Ui_MainWindow(QMainWindow):
                     
                     # self.X02 = self.X2
                     
-                    self.horizontalSlider.setMaximum(len(self.file_list))
+                    self.horizontalSlider.setMaximum(len(self.file_list)-1)
                     self.tableWidget.setRowCount(len(self.file_list))
                     for i in range(0,len(self.file_list)):
                         self.tableWidget.setItem(i,0, QtWidgets.QTableWidgetItem(self.params['sufix']))
                         self.tableWidget.setItem(i,1, QtWidgets.QTableWidgetItem("{:5.4f}".format(self.energy[i])))
                         self.tableWidget.setItem(i,2, QtWidgets.QTableWidgetItem("{:4.2f}".format(np.min(self.X01[i]))))
-                        self.tableWidget.setItem(i,3, QtWidgets.QTableWidgetItem("{:4.2f}".format(np.min(self.X1[i]))))
-                        self.tableWidget.setItem(i,4, QtWidgets.QTableWidgetItem("{:4.2f}".format(np.max(self.X01[i]))))
+                        self.tableWidget.setItem(i,3, QtWidgets.QTableWidgetItem("{:4.2f}".format(np.max(self.X01[i]))))
+                        self.tableWidget.setItem(i,4, QtWidgets.QTableWidgetItem("{:4.2f}".format(np.min(self.X1[i]))))
                         self.tableWidget.setItem(i,5, QtWidgets.QTableWidgetItem("{:4.2f}".format(np.max(self.X1[i]))))
                         
                         
@@ -1197,7 +1211,7 @@ class Ui_MainWindow(QMainWindow):
                     
                     self.update_org()
                     self.update_pro()
-                    QMessageBox.information(None, "Processing Done", "reading of the data is done")
+                    #QMessageBox.information(None, "Processing Done", "reading of the data is done")
                     from PyQt5.QtSvg import QSvgGenerator
                     from PyQt5.QtGui import QPainter, QColor, QPalette  # Add the QPalette import here
 
@@ -1212,8 +1226,13 @@ class Ui_MainWindow(QMainWindow):
                     QMessageBox.warning(None, 'Error',"you need to define correct path")
                     
             else:
-                print("please define the path and sufix correctly")
-                QMessageBox.warning(None, 'Error',"please define the path and/or sufix correctly")
+                print("please define the path and the prefix correctly")
+                QMessageBox.warning(None, 'Error', "Path and/or prefix not defined. Validate the prefix by pressing the Enter button before clicking on Browse")
+
+
+
+
+
                 #self.params["sufix"]= self.input_text_dialog.getText()
                     
                     
@@ -1233,8 +1252,8 @@ class Ui_MainWindow(QMainWindow):
             for i in range(0,len(self.file_list)):
             
                 self.tableWidget.setItem(i,2, QtWidgets.QTableWidgetItem("{:4.2f}".format(np.min(self.X01[i]))))    
-                self.tableWidget.setItem(i,4, QtWidgets.QTableWidgetItem("{:4.2f}".format(np.max(self.X01[i]))))
-                self.tableWidget.setItem(i,3, QtWidgets.QTableWidgetItem("{:4.2f}".format(np.min(self.X1[i]))))
+                self.tableWidget.setItem(i,3, QtWidgets.QTableWidgetItem("{:4.2f}".format(np.max(self.X01[i]))))
+                self.tableWidget.setItem(i,4, QtWidgets.QTableWidgetItem("{:4.2f}".format(np.min(self.X1[i]))))
                 self.tableWidget.setItem(i,5, QtWidgets.QTableWidgetItem("{:4.2f}".format(np.max(self.X1[i]))))
             #self.tableWidget.setItem(0,0, QtWidgets.QTableWidgetItem("Name"))
             #self.tableWidget.horizontalHeader().setStretchLastSection(True)
@@ -1502,19 +1521,23 @@ class Ui_MainWindow(QMainWindow):
                     fig_mean,(ax_mean,ax_abs)= plt.subplots(1,2)
                     #ax_mean = fig_mean.add_subplot(111)
                     ax_mean.set_xlabel('energy [KeV]')
-                    ax_mean.set_ylabel("delta " "("" \u03B4"")")
-                    ax_mean.set_title('Spectra from phase images for sample thickness={} micron'.format(self.dz) , horizontalalignment='center', verticalalignment='top')
+                    #ax_mean.set_ylabel("delta " "("" \u03B4"")")
+                    ax_mean.set_ylabel(self.axyd)
+                    ax_mean.set_title(self.td)
+                    #ax_mean.set_title('Spectra from phase images for sample thickness={} micron'.format(self.dz) , horizontalalignment='center', verticalalignment='top')
                     ax_mean.plot(self.energy,mean_ROI,'bo')
                     
                     ax_abs.set_xlabel('energy [KeV]')
-                    ax_abs.set_ylabel("beta " "("" \u03B2"")")
-                    ax_abs.set_title('Spectra from absorption images for sample thickness={} micron'.format(self.dz) , horizontalalignment='center', verticalalignment='top')         
+                    #ax_abs.set_ylabel("beta " "("" \u03B2"")")
+                    ax_abs.set_ylabel(self.axyb)
+                    ax_abs.set_title(self.td)
+                    #ax_abs.set_title('Spectra from absorption images for sample thickness={} micron'.format(self.dz) , horizontalalignment='center', verticalalignment='top')         
                     ax_abs.plot(self.energy,mean_abs,'bo')
                     
-                    combined_arr_beta = np.vstack((self.energy, mean_abs*1e5)).T
+                    combined_arr_beta = np.vstack((self.energy, mean_abs*1e5*self.Svb)).T
                     np.savetxt('beta.txt', combined_arr_beta, delimiter=',', header='energy(KeV),absorption(au)', comments='')
                     
-                    combined_arr_delta = np.vstack((self.energy, mean_ROI*1e4)).T
+                    combined_arr_delta = np.vstack((self.energy, mean_ROI*1e4*self.Svd)).T
                     np.savetxt('delta.txt', combined_arr_delta, delimiter=',', header='energy(KeV),delta(au)', comments='')
                     
                 else:
@@ -1589,14 +1612,18 @@ class Ui_MainWindow(QMainWindow):
                     fig_var,(ax_var,ax_abs) = plt.subplots(1,2)
                     #ax_var = fig_var.add_subplot(111)
                     ax_var.set_xlabel('energy [KeV]')
-                    ax_var.set_ylabel("delta variance")
-                    ax_var.set_title('delta variance spectra for sample thickness={} micron' .format(self.dz), horizontalalignment='center', verticalalignment='top')
-                    ax_var.plot(self.energy,var_ROI,'-ok',color="blue")
+                    ax_var.set_ylabel(self.Vaxyd)
+                    ax_var.set_title(self.Vtd)
+                    
+                    #ax_var.set_title('delta variance spectra for sample thickness={} micron' .format(self.dz), horizontalalignment='center', verticalalignment='top')
+                    ax_var.plot(self.energy,var_ROI,color="blue")
                     
                     ax_abs.set_xlabel('energy [KeV]')
-                    ax_abs.set_ylabel("beta variance")
-                    ax_abs.set_title('beta variance spectra for sample thickness={} micron'.format(self.dz) , horizontalalignment='center', verticalalignment='top')         
-                    ax_abs.plot(self.energy,var_abs,'-ok',color="blue")
+                    ax_abs.set_ylabel(self.Vaxyb)
+                    #ax_abs.set_ylabel("beta variance")
+                    ax_abs.set_title(self.Vtb)
+                    #ax_abs.set_title('beta variance spectra for sample thickness={} micron'.format(self.dz) , horizontalalignment='center', verticalalignment='top')         
+                    ax_abs.plot(self.energy,var_abs,color="blue")
                     
                     
                 else:
@@ -1607,12 +1634,12 @@ class Ui_MainWindow(QMainWindow):
                     ax_var.set_xlabel('energy [KeV]')
                     ax_var.set_ylabel("phase shift variance")
                     ax_var.set_title('phase variance spectra ', horizontalalignment='center', verticalalignment='top')
-                    ax_var.plot(self.energy,var_ROI,'-ok',color="blue")
+                    ax_var.plot(self.energy,var_ROI,color="blue")
                     
                     ax_abs.set_xlabel('energy [KeV]')
                     ax_abs.set_ylabel(self.text[1][self.ind].replace(" [a.u.]", "")+" variance")
                     ax_abs.set_title(self.text[1][self.ind].replace(" [a.u.]", "")+' variance spectra ', horizontalalignment='center', verticalalignment='top')
-                    ax_abs.plot(self.energy,var_abs,'-ok',color="blue")  
+                    ax_abs.plot(self.energy,var_abs,color="blue")  
                         
                 plt.tight_layout()
                 plt.show()
@@ -1673,14 +1700,18 @@ class Ui_MainWindow(QMainWindow):
                     fig_std,(ax_std,ax_abs) = plt.subplots(1,2)
                     #ax_std = fig_std.add_subplot(111)
                     ax_std.set_xlabel('energy [KeV]')
-                    ax_std.set_ylabel("delta standard deviation")
-                    ax_std.set_title('delta standard deviation spectra for sample thickness={} micron' .format(self.dz), horizontalalignment='center', verticalalignment='top')
-                    ax_std.plot(self.energy,std_ROI,'-ok',color="blue")
+                    #ax_std.set_ylabel("delta standard deviation")
+                    ax_std.set_ylabel(self.Saxyd)
+                    ax_std.set_title(self.Std)
+                    #ax_std.set_title('delta standard deviation spectra for sample thickness={} micron' .format(self.dz), horizontalalignment='center', verticalalignment='top')
+                    ax_std.plot(self.energy,std_ROI,color="blue")
                     
                     ax_abs.set_xlabel('energy [KeV]')
-                    ax_abs.set_ylabel("beta standard deviation")
-                    ax_abs.set_title('beta standard deviation spectra for sample thickness={} micron'.format(self.dz) , horizontalalignment='center', verticalalignment='top')         
-                    ax_abs.plot(self.energy,std_abs,'-ok',color="blue")
+                    #ax_abs.set_ylabel("beta standard deviation")
+                    ax_abs.set_ylabel(self.Saxyb)
+                    ax_abs.set_title(self.Stb)
+                    #ax_abs.set_title('beta standard deviation spectra for sample thickness={} micron'.format(self.dz) , horizontalalignment='center', verticalalignment='top')         
+                    ax_abs.plot(self.energy,std_abs,color="blue")
                     
                     
                 else:
@@ -1689,12 +1720,12 @@ class Ui_MainWindow(QMainWindow):
                     ax_std.set_xlabel('energy [KeV]')
                     ax_std.set_ylabel('phase shift standard deviation')
                     ax_std.set_title('phase shift standard deviation spectra ', horizontalalignment='center', verticalalignment='top')
-                    ax_std.plot(self.energy,std_ROI,'-ok',color="blue")
+                    ax_std.plot(self.energy,std_ROI,color="blue")
                     
                     ax_abs.set_xlabel('energy [KeV]')
                     ax_abs.set_ylabel(self.text[1][self.ind].replace(" [a.u.]", "")+" standard deviation")
                     ax_abs.set_title(self.text[1][self.ind].replace(" [a.u.]", "")+' standard deviation spectra ', horizontalalignment='center', verticalalignment='top')
-                    ax_abs.plot(self.energy,std_abs,'-ok',color="blue")
+                    ax_abs.plot(self.energy,std_abs,color="blue")
                     
                 plt.tight_layout()   
                 plt.show()
@@ -1849,22 +1880,114 @@ class Ui_MainWindow(QMainWindow):
             
             if self.contrast==1:
                 
-                print("second time")
-                #QMessageBox.warning(None, 'Error',"images already converted")
-                self.dz = self.input_dialog.getValue()
-    
-                if self.dz:
+                reply=QMessageBox.question(self,'', "Do you know the thickness of your sample", QMessageBox.Yes | QMessageBox.No)
+                if reply==QMessageBox.Yes:
+                    
+                    
+                    
                     
                     
                 
+                
+                    print("second time")
+                    #QMessageBox.warning(None, 'Error',"images already converted")
+                    self.dz = self.input_dialog.getValue()
+        
+                    if self.dz:
+                        
+                        
+
+                        
+                        print(self.dz)
+                        self.axyb="Beta" 
+                        self.axyd="Delta"
+                        self.td="Sample thickness "+format(self.dz)+" micron"
+                        self.tb="Sample thickness "+format(self.dz)+" micron"
+                
+                        self.Vaxyb="Beta variance" 
+                        self.Vaxyd="Delta variance"
+                        self.Vtd="Sample thickness "+format(self.dz)+" micron"
+                        self.Vtb="Sample thickness "+format(self.dz)+" micron"
+                        
+                        self.Saxyb="Beta standard deviation" 
+                        self.Saxyd="Delta standard deviation"
+                        self.Std="Sample thickness "+format(self.dz)+" micron"
+                        self.Stb="Sample thickness "+format(self.dz)+" micron"
+                        self.Svb=1
+                        self.Svd=1
+                
+                
+                        #     self.label.setText(f'You entered: {value}')
+                        # #self.dz=get_thickness()
+                        # if value is not None:
+                        #     self.label.setText(f'You entered: {value}')
+                
+                        if self.phase_amp==0:
+                            
+                            
+                            for ii in range(self.projs):
+                                
+                                strbar = "Projection {} out of {}".format(ii + 1, self.projs)
+                                self.X1[ii], factor = convert_phase2delta(
+                                    self.before_delta[ii],
+                                    self.energy[ii],self.dz)
+                                self.X3[ii],_ = convert_to_beta(
+                                     self.before_beta[ii],
+                                     self.energy[ii],self.dz)
+                                 
+                                
+                                
+                                self.X2[ii] = self.X1[ii, self.hcen, :].copy()
+                                progbar(ii + 1, self.projs, strbar)
+                                
+                                
+                        else:
+    
+                            for ii in range(self.projs):
+                                strbar = "Projection {} out of {}".format(ii + 1, self.projs)
+                                self.X1[ii],_ = convert_to_beta(
+                                    self.before_beta[ii],
+                                    self.energy[ii],self.dz)
+                                self.X1_previous_phase[ii],factor = convert_phase2delta(
+                                     self.before_delta[ii],
+                                     self.energy[ii],self.dz)
+                                
+                                
+                                
+                                self.X2[ii] = self.X1[ii, self.hcen, :].copy()
+                                progbar(ii + 1, self.projs, strbar)
+                            
+                            
+                        print("\r")
+                        print("Done")
+                        # factor is negative so that we need to exchange vmin and vmax
+                        # self.vmin = self.vmax*(factor)
+                        # self.vmax = self.vmin*(factor)
+                        # self.pmin, self.pmax = self.vmin, self.vmax
+                        # self.var1=True
+                        self.update_pro()
+                        self.update_list()
+                        #QMessageBox.information(None, "Processing Done", "conversion to delta contrast is completed")
+                        
+                else:
+                    self.axyb="Beta*sample thickness" 
+                    self.axyd="Delta*sample thickness"
+                    self.td="Unknown sample thickness"
+                    self.tb="Unknown sample thickness"
                     
-                    print(self.dz)
-            
-                    #     self.label.setText(f'You entered: {value}')
-                    # #self.dz=get_thickness()
-                    # if value is not None:
-                    #     self.label.setText(f'You entered: {value}')
-            
+                    self.Vaxyb="(Beta*sample thickness) variance" 
+                    self.Vaxyd="(Delta*sample thickness) variance"
+                    self.Vtd="Unknown sample thickness"
+                    self.Vtb="Unknown sample thickness"
+                    
+                    self.Saxyb="(Beta*sample thickness) standard deviation" 
+                    self.Saxyd="(Delta*sample thickness) standard deviation"
+                    self.Std="Unknown sample thickness"
+                    self.Stb="Unknown sample thickness"
+                                        
+                    self.Svb=1e5
+                    self.Svd=1e5
+                    
                     if self.phase_amp==0:
                         
                         
@@ -1873,10 +1996,10 @@ class Ui_MainWindow(QMainWindow):
                             strbar = "Projection {} out of {}".format(ii + 1, self.projs)
                             self.X1[ii], factor = convert_phase2delta(
                                 self.before_delta[ii],
-                                self.energy[ii],self.dz)
+                                self.energy[ii],1e6)
                             self.X3[ii],_ = convert_to_beta(
                                  self.before_beta[ii],
-                                 self.energy[ii],self.dz)
+                                 self.energy[ii],1e6)
                              
                             
                             
@@ -1885,15 +2008,15 @@ class Ui_MainWindow(QMainWindow):
                             
                             
                     else:
-
+                        self.dz=0
                         for ii in range(self.projs):
                             strbar = "Projection {} out of {}".format(ii + 1, self.projs)
                             self.X1[ii],_ = convert_to_beta(
                                 self.before_beta[ii],
-                                self.energy[ii],self.dz)
+                                self.energy[ii],1e6)
                             self.X1_previous_phase[ii],factor = convert_phase2delta(
                                  self.before_delta[ii],
-                                 self.energy[ii],self.dz)
+                                 self.energy[ii],1e6)
                             
                             
                             
@@ -1910,30 +2033,120 @@ class Ui_MainWindow(QMainWindow):
                     # self.var1=True
                     self.update_pro()
                     self.update_list()
-                    QMessageBox.information(None, "Processing Done", "conversion to delta contrast is completed")
-                
+                    
                 
                 
                 
                 
                 
             else:
-                print("first time")
-            
-                self.dz = self.input_dialog.getValue()
-    
-                if self.dz:
+                reply=QMessageBox.question(self,'', "Do you know the thickness of your sample", QMessageBox.Yes | QMessageBox.No)
+                if reply==QMessageBox.Yes:
                     
-                    
+                    print("first time")
                 
+                    self.dz = self.input_dialog.getValue()
+        
+                    if self.dz:
+                        
+                        self.axyb="Beta" 
+                        self.axyd="Delta"
+                        self.td="Sample thickness "+format(self.dz)+" micron"
+                        self.tb="Sample thickness "+format(self.dz)+" micron"
+                        
+                        self.Vaxyb="Beta variance" 
+                        self.Vaxyd="Delta variance"
+                        self.Vtd="Sample thickness "+format(self.dz)+" micron"
+                        self.Vtb="Sample thickness "+format(self.dz)+" micron"
+                        
+                        self.Saxyb="Beta standard deviation" 
+                        self.Saxyd="Delta standard deviation"
+                        self.Std="Sample thickness "+format(self.dz)+" micron"
+                        self.Stb="Sample thickness "+format(self.dz)+" micron"
+                        self.Svb=1
+                        self.Svd=1
+                        
+                        
+                        print(self.dz)
+                
+                        #     self.label.setText(f'You entered: {value}')
+                        # #self.dz=get_thickness()
+                        # if value is not None:
+                        #     self.label.setText(f'You entered: {value}')
+                
+                        if self.phase_amp==0:
+                            
+                            self.before_delta=self.X1.copy()
+                            self.before_beta=self.X3.copy()
+                            for ii in range(self.projs):
+                                
+                                strbar = "Projection {} out of {}".format(ii + 1, self.projs)
+                                self.X1[ii], factor = convert_phase2delta(
+                                    self.X1[ii],
+                                    self.energy[ii],self.dz)
+                                self.X3[ii],_ = convert_to_beta(
+                                     self.X3[ii],
+                                     self.energy[ii],self.dz)
+                                 
+                                
+                                
+                                self.X2[ii] = self.X1[ii, self.hcen, :].copy()
+                                progbar(ii + 1, self.projs, strbar)
+                                
+                                
+                        else:
+                            self.before_delta=self.X1_previous_phase.copy()
+                            self.before_beta=self.X1.copy()
+                            for ii in range(self.projs):
+                                strbar = "Projection {} out of {}".format(ii + 1, self.projs)
+                                self.X1[ii],_ = convert_to_beta(
+                                    self.X1[ii],
+                                    self.energy[ii],self.dz)
+                                self.X1_previous_phase[ii],factor = convert_phase2delta(
+                                     self.X1_previous_phase[ii],
+                                     self.energy[ii],self.dz)
+                                
+                                
+                                
+                                self.X2[ii] = self.X1[ii, self.hcen, :].copy()
+                                progbar(ii + 1, self.projs, strbar)
+                            
+                            
+                        print("\r")
+                        print("Done")
+                        # factor is negative so that we need to exchange vmin and vmax
+                        self.vmin = self.vmax*(factor)
+                        self.vmax = self.vmin*(factor)
+                        self.contrast=1
+                        self.pmin, self.pmax = self.vmin, self.vmax
+                        self.var1=True
+                        self.update_pro()
+                        self.update_list()
+                        #QMessageBox.information(None, "Processing Done", "conversion to delta contrast is completed")
+                        
+                    else:
+                        #QMessageBox.warning(None, 'Error',"Please define the sample thickness in micron")
+                        print("Please define the sample thickness in micron")
+                else:
+                    self.axyb="Beta*sample thickness" 
+                    self.axyd="Delta*sample thickness"
+                    self.td="Unknown sample thickness"
+                    self.tb="Unknown sample thickness"
                     
-                    print(self.dz)
-            
-                    #     self.label.setText(f'You entered: {value}')
-                    # #self.dz=get_thickness()
-                    # if value is not None:
-                    #     self.label.setText(f'You entered: {value}')
-            
+                    self.Vaxyb="(Beta*sample thickness) variance" 
+                    self.Vaxyd="(Delta*sample thickness) variance"
+                    self.Vtd="Unknown sample thickness"
+                    self.Vtb="Unknown sample thickness"
+                    
+                    self.Saxyb="(Beta*sample thickness) standard deviation" 
+                    self.Saxyd="(Delta*sample thickness) standard deviation"
+                    self.Std="Unknown sample thickness"
+                    self.Stb="Unknown sample thickness"
+                    
+                    self.Svb=1e5
+                    self.Svd=1e5
+                    
+                    
                     if self.phase_amp==0:
                         
                         self.before_delta=self.X1.copy()
@@ -1943,10 +2156,10 @@ class Ui_MainWindow(QMainWindow):
                             strbar = "Projection {} out of {}".format(ii + 1, self.projs)
                             self.X1[ii], factor = convert_phase2delta(
                                 self.X1[ii],
-                                self.energy[ii],self.dz)
+                                self.energy[ii],1e6)
                             self.X3[ii],_ = convert_to_beta(
                                  self.X3[ii],
-                                 self.energy[ii],self.dz)
+                                 self.energy[ii],1e6)
                              
                             
                             
@@ -1961,10 +2174,10 @@ class Ui_MainWindow(QMainWindow):
                             strbar = "Projection {} out of {}".format(ii + 1, self.projs)
                             self.X1[ii],_ = convert_to_beta(
                                 self.X1[ii],
-                                self.energy[ii],self.dz)
+                                self.energy[ii],1e6)
                             self.X1_previous_phase[ii],factor = convert_phase2delta(
                                  self.X1_previous_phase[ii],
-                                 self.energy[ii],self.dz)
+                                 self.energy[ii],1e6)
                             
                             
                             
@@ -1982,11 +2195,8 @@ class Ui_MainWindow(QMainWindow):
                     self.var1=True
                     self.update_pro()
                     self.update_list()
-                    QMessageBox.information(None, "Processing Done", "conversion to delta contrast is completed")
+                        
                     
-                else:
-                    #QMessageBox.warning(None, 'Error',"Please define the sample thickness in micron")
-                    print("Please define the sample thickness in micron")
     def apply_mask(self):
         """
         Apply the linear phase correction using current mask
@@ -2005,7 +2215,7 @@ class Ui_MainWindow(QMainWindow):
                 self.update_list()
                 self.update_pro()
                 
-                QMessageBox.information(None, "Processing Done", "constant and ramp removal of image "+ str(self.ind+1)+" is done")
+                #QMessageBox.information(None, "Processing Done", "constant and ramp removal of image "+ str(self.ind+1)+" is done")
             else:
                 print("You need to define mask")
                 QMessageBox.warning(None, 'Error',"You need to define mask")
@@ -2022,7 +2232,7 @@ class Ui_MainWindow(QMainWindow):
             self.X2[self.ind] = self.X1[self.ind, self.hcen, :].copy()
             self.update_list()
             self.update_pro()
-            QMessageBox.information(None, "Processing Done", "constant and ramp removal of image "+ str(self.ind+1)+" is done")
+            #QMessageBox.information(None, "Processing Done", "constant and ramp removal of image "+ str(self.ind+1)+" is done")
         else:
             
             print("No data or mask")
@@ -2048,7 +2258,7 @@ class Ui_MainWindow(QMainWindow):
                 self.update_list()
                 self.update_pro()
                 
-                QMessageBox.information(None, "Processing Done", "Normalization of image "+ str(self.ind+1)+" is done")
+                #QMessageBox.information(None, "Processing Done", "Normalization of image "+ str(self.ind+1)+" is done")
             else:
                 print("You need to define mask")
                 QMessageBox.warning(None, 'Error',"You need to define mask")
@@ -2065,7 +2275,7 @@ class Ui_MainWindow(QMainWindow):
             self.X2[self.ind] = self.X1[self.ind, self.hcen, :].copy()
             self.update_list()
             self.update_pro()
-            QMessageBox.information(None, "Processing Done", "Normalization of image "+ str(self.ind+1)+" is done")
+            #QMessageBox.information(None, "Processing Done", "Normalization of image "+ str(self.ind+1)+" is done")
         else:
             
             print("No data or mask")
@@ -2099,7 +2309,7 @@ class Ui_MainWindow(QMainWindow):
                 print("Done")
                 self.update_list()
                 self.update_pro()
-                QMessageBox.information(None, "Processing Done", "constant and ramp removal of all images is done")
+                #QMessageBox.information(None, "Processing Done", "constant and ramp removal of all images is done")
             else:
                 print("You need to define mask")
                 QMessageBox.warning(None, 'Error',"You need to define mask")
@@ -2124,7 +2334,7 @@ class Ui_MainWindow(QMainWindow):
             print("Done")
             self.update_list()
             self.update_pro()
-            QMessageBox.information(None, "Processing Done", "constant and ramp removal of all images is done")
+            #QMessageBox.information(None, "Processing Done", "constant and ramp removal of all images is done")
         else:
             print("No data or mask")
             QMessageBox.warning(None, 'Error',"No data or mask")
@@ -2167,7 +2377,7 @@ class Ui_MainWindow(QMainWindow):
                 print("Done")
                 self.update_list()
                 self.update_pro()
-                QMessageBox.information(None, "Processing Done", "All images are normalized")
+                #QMessageBox.information(None, "Processing Done", "All images are normalized")
             else:
                 print("You need to define mask")
                 QMessageBox.warning(None, 'Error',"You need to define mask")
@@ -2229,6 +2439,7 @@ class Ui_MainWindow(QMainWindow):
         
                 self.update_pro()
                 self.add_mask_=0
+                
                 #self.mask_=0
                 
             else:
@@ -2240,6 +2451,7 @@ class Ui_MainWindow(QMainWindow):
             
             self.mask[self.ind,:,:] = np.zeros_like(self.X1[self.ind,:,:], dtype=bool)
             self.add_mask_=0
+            self.load_mask_=0
             self.update_pro()
         else:
             print("No data or mask")
@@ -2274,6 +2486,7 @@ class Ui_MainWindow(QMainWindow):
             self.mask = np.zeros_like(self.X1, dtype=bool)
             self.mask_all_=0
             self.mask_=0
+            self.load_mask_=0
             self.update_pro()        
 
         else:
@@ -2303,7 +2516,7 @@ class Ui_MainWindow(QMainWindow):
     
             self.update_pro()
             self.update_list()
-            QMessageBox.information(None, "Processing Done", "unwrapping of image "+ str(self.ind+1)+" is done")
+            #QMessageBox.information(None, "Processing Done", "unwrapping of image "+ str(self.ind+1)+" is done")
             
             
     def convert_mudz(self, event):
@@ -2334,7 +2547,7 @@ class Ui_MainWindow(QMainWindow):
             
                 self.update_pro()
                 self.update_list()
-                QMessageBox.information(None, "Processing Done", "converting of image "+ str(self.ind+1)+" is done")
+                #QMessageBox.information(None, "Processing Done", "converting of image "+ str(self.ind+1)+" is done")
     def unwrapping_all(self, event):
         """
         Unwrap phase of all projections
@@ -2361,7 +2574,7 @@ class Ui_MainWindow(QMainWindow):
             print("Done")
         self.update_pro()
         self.update_list()
-        QMessageBox.information(None, "Processing Done", "unwrapping of all images is done")
+        #QMessageBox.information(None, "Processing Done", "unwrapping of all images is done")
         
     def convert_mudz_all(self, event):
         """
@@ -2401,7 +2614,7 @@ class Ui_MainWindow(QMainWindow):
             print("Done")
         self.update_pro()
         self.update_list()
-        QMessageBox.information(None, "Processing Done", "Converting of all images is done")
+        #QMessageBox.information(None, "Processing Done", "Converting of all images is done")
     def save_masks(self):
         
         """
@@ -2431,7 +2644,7 @@ class Ui_MainWindow(QMainWindow):
                         
                         #np.savez('airmask', mask=self.mask)
                         np.savez(outputfname,mask=mask)
-                        QMessageBox.information(None, "Processing Done", "mask saved")
+                        #QMessageBox.information(None, "Processing Done", "mask saved")
                     else:
                        QMessageBox.warning(None, 'Error',"Mask not defined correctly") 
 
@@ -2462,7 +2675,7 @@ class Ui_MainWindow(QMainWindow):
                         
                         self.mask=data["mask"]
                         self.load_mask_=1
-                        QMessageBox.information(None, "Processing Done", "mask loaded")
+                        #QMessageBox.information(None, "Processing Done", "mask loaded")
                     else:
                         QMessageBox.warning(None, 'Error',"loaded mask doesn't have the same shape as the current images ")
                         
@@ -2556,7 +2769,7 @@ class Ui_MainWindow(QMainWindow):
             print("\r")
             print("Done")
             self.update_pro()
-            QMessageBox.information(None, "Processing Done", "interpolation is done")
+            #QMessageBox.information(None, "Processing Done", "interpolation is done")
             self.update_list()
     def align_all(self):
         """
@@ -2577,7 +2790,7 @@ class Ui_MainWindow(QMainWindow):
                     
                     self.shift[self.phase_amp,:]= self.shift[0,:]
                     self.X1[ii] = shift_image(self.X1[ii], shift=self.shift[0,ii])
-                QMessageBox.information(None, "Processing Done", "alignement is done")
+                #QMessageBox.information(None, "Processing Done", "alignement is done")
             
             elif self.phase_amp==1 and self.use_shifts==0:
                 
@@ -2618,7 +2831,7 @@ class Ui_MainWindow(QMainWindow):
                     #self.X03[ii]=shift_image(self.X03[ii],shift=self.shift[self.phase_amp,ii])+1e-12
                 self.update_pro()
                 self.update_list()
-                QMessageBox.information(None, "Processing Done", "alignement is done")
+                #QMessageBox.information(None, "Processing Done", "alignement is done")
 
 
     def plot_shifts(self, event):
@@ -3060,7 +3273,7 @@ class Ui_MainWindow(QMainWindow):
                 p2='.npz'
                 outputfname=p1+p2
                 np.savez(outputfname,pixel=self.pixel[self.ind],energy=self.energy[self.ind],projection=self.X1[self.ind])
-                QMessageBox.information(None, "Processing Done", "saving of image "+str(self.ind+1)+" is done")
+                #QMessageBox.information(None, "Processing Done", "saving of image "+str(self.ind+1)+" is done")
             else:
                 print("Please select a directory for saving")
 
@@ -3084,7 +3297,7 @@ class Ui_MainWindow(QMainWindow):
                 outputfname=p1+p2
                 
                 np.savez(outputfname,self.X1,pixel=self.pixel,energy=self.energy,projection=self.X1)
-                QMessageBox.information(None, "Processing Done", "saving of all images is done")
+                #QMessageBox.information(None, "Processing Done", "saving of all images is done")
             else:
                 print("Please select a directory for saving")
   
